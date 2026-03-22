@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>耘雀 · 感谢</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #f7f2e8;
+      color: #2a1e14;
+      font-family: 'ZCOOL KuaiLe', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    #yunque-wrap {
+      max-width: 600px;
+      width: 100%;
+      padding: 60px 32px 80px;
+      text-align: center;
+    }
+
+    /* 顶部印章徽标 */
+    #yq-seal {
+      width: 72px;
+      height: 72px;
+      border: 2.5px solid rgba(192,120,74,0.6);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 32px;
+      transform: rotate(-3deg);
+      opacity: 0;
+      transition: opacity 0.8s;
+    }
+    #yq-seal.show { opacity: 1; }
+    #yq-seal-icon { font-size: 28px; margin-bottom: 2px; }
+    #yq-seal-text { font-size: 11px; color: rgba(192,120,74,0.8); letter-spacing: 2px; font-family: 'Courier New', monospace; }
+
+    /* 各行文字 */
+    .yq-line {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.7s, transform 0.7s;
+      margin-bottom: 0;
+    }
+    .yq-line.show { opacity: 1; transform: translateY(0); }
+
+    .yq-greeting {
+      font-size: 15px;
+      color: #6a5030;
+      letter-spacing: 2px;
+      margin-bottom: 28px;
+      font-family: 'Ma Shan Zheng', cursive;
+    }
+
+    .yq-body {
+      font-size: 14px;
+      color: #3a2e1e;
+      line-height: 2.2;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .yq-divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(192,120,74,0.4), transparent);
+      margin: 24px auto;
+    }
+
+    /* 编码卡片 */
+    #yq-code-wrap {
+      background: #fffdf7;
+      border: 1.5px solid rgba(192,120,74,0.3);
+      border-radius: 12px;
+      padding: 24px 32px;
+      margin: 8px 0 24px;
+      box-shadow: 0 2px 16px rgba(42,30,20,0.07);
+      position: relative;
+      overflow: hidden;
+    }
+    #yq-code-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #c0784a, #d4a060, #c0784a);
+    }
+    #yq-code-label {
+      font-size: 11px;
+      color: #a89070;
+      letter-spacing: 3px;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 10px;
+    }
+    #yq-code {
+      font-size: 22px;
+      color: #8a4020;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 4px;
+      font-weight: bold;
+    }
+    #yq-code-sub {
+      font-size: 11px;
+      color: #c0a080;
+      font-family: 'Courier New', monospace;
+      margin-top: 8px;
+      letter-spacing: 1px;
+    }
+
+    .yq-address {
+      font-size: 13px;
+      color: #5a4030;
+      line-height: 2;
+      margin-bottom: 10px;
+    }
+    .yq-address strong {
+      color: #8a4020;
+      background: rgba(192,120,74,0.1);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .yq-sign {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 16px;
+      color: #8a6030;
+      letter-spacing: 3px;
+      margin-top: 8px;
+    }
+
+    /* 回程按钮 */
+    #yq-back {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 10px 28px;
+      border: 1px solid rgba(42,30,20,0.18);
+      border-radius: 20px;
+      font-size: 12px;
+      color: #6a5030;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: background 0.2s;
+      font-family: 'ZCOOL KuaiLe', sans-serif;
+      opacity: 0;
+      transition: opacity 0.6s, background 0.2s;
+    }
+    #yq-back.show { opacity: 1; }
+    #yq-back:hover { background: rgba(42,30,20,0.05); }
+
+    /* 背景装饰纹 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        radial-gradient(ellipse at 20% 20%, rgba(192,120,74,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(160,180,120,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<div id="yunque-wrap">
+
+  <div id="yq-seal">
+    <div id="yq-seal-icon">🕊</div>
+    <div id="yq-seal-text">耘雀</div>
+  </div>
+
+  <div class="yq-line yq-greeting" id="l0">感谢你，远道而来的"我"。</div>
+
+  <div class="yq-line yq-body" id="l1">在你的智慧协助下，"耘雀"终于达成了使命。</div>
+
+  <div class="yq-line yq-body" id="l2">你或许不曾察觉，但正是因为你的每一次思索与抉择，<br>才让云处村的时空趋于稳定，让每一个时空的"我"都能够在这里好好生活。</div>
+
+  <div class="yq-line yq-body" id="l3">任务虽然在此处告一段落，<br>但你所在时空的云处村依然保留着"我们"守护过的痕迹。</div>
+
+  <div class="yq-line yq-divider" id="ld1"></div>
+
+  <div class="yq-line yq-body" id="l4">为了感谢你的卓越贡献，请收下这份独一无二的勇者凭证：</div>
+
+  <div class="yq-line" id="lcode" style="margin-bottom:10px;">
+    <div id="yq-code-wrap">
+      <div id="yq-code-label">▸ 勇者编码</div>
+      <div id="yq-code">YQ-<span id="yq-code-num">--------</span></div>
+      <div id="yq-code-sub">此编码为独一无二，请妥善保存</div>
+    </div>
+  </div>
+
+  <div class="yq-line yq-address" id="l5">
+    你可以凭借此编码，在<br>
+    <strong>浙江省丽水市云和县安溪畲族乡黄处村</strong><br>
+    （这里是你所在时空云处村的使用名）<br>
+    领取一份属于你的"勇者礼品"。
+  </div>
+
+  <div class="yq-line yq-divider" id="ld2"></div>
+
+  <div class="yq-line yq-body" id="l6">我们在这里，静候英雄归来。</div>
+
+  <div class="yq-line yq-sign" id="l7">—— "耘雀"</div>
+
+  <div id="yq-back" onclick="window.location.href='yunchu-gov.html'">← 返回官网</div>
+
+</div>
+
+<script>
+// 生成随机8位编码（大写字母+数字）
+function genCode() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var result = '';
+  for (var i = 0; i < 8; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
+
+// 写入编码（从 localStorage 取，保证同一玩家编码不变）
+var SAVE_KEY = 'village_save';
+var codeKey = 'yunque_code';
+var code = '';
+try {
+  var raw = localStorage.getItem(SAVE_KEY);
+  var s = raw ? JSON.parse(raw) : {};
+  if (s.yunqueCode) {
+    code = s.yunqueCode;
+  } else {
+    code = genCode();
+    s.yunqueCode = code;
+    localStorage.setItem(SAVE_KEY, JSON.stringify(s));
+  }
+} catch(e) {
+  code = genCode();
+}
+document.getElementById('yq-code-num').textContent = code;
+
+// 动画序列
+var steps = [
+  { id: 'yq-seal',  delay: 300 },
+  { id: 'l0',       delay: 900 },
+  { id: 'l1',       delay: 1700 },
+  { id: 'l2',       delay: 2500 },
+  { id: 'l3',       delay: 3500 },
+  { id: 'ld1',      delay: 4400 },
+  { id: 'l4',       delay: 4800 },
+  { id: 'lcode',    delay: 5500 },
+  { id: 'l5',       delay: 6400 },
+  { id: 'ld2',      delay: 7600 },
+  { id: 'l6',       delay: 8000 },
+  { id: 'l7',       delay: 8700 },
+  { id: 'yq-back',  delay: 9500 }
+];
+
+steps.forEach(function(s) {
+  setTimeout(function() {
+    var el = document.getElementById(s.id);
+    if (el) el.classList.add('show');
+  }, s.delay);
+});
+</script>
+</body>
+</html>

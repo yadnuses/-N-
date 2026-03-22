@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>尾声 · 第N个观测者</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:       #f7f2e8;
+      --surface:  #f0ead8;
+      --surface2: #ede4d0;
+      --border:   #d8ccb0;
+      --accent:   #8a6030;
+      --accent2:  #6a8850;
+      --text:     #2a1e0e;
+      --text-dim: #6a5030;
+      --text-mute:#a89070;
+      --mono:     'Courier New', monospace;
+      --ink:      #2a1e14;
+      --ink-dim:  #6a5040;
+      --paper:    #faf6ef;
+      --paper2:   #f5ede0;
+      --ca:       #c0784a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'ZCOOL KuaiLe', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    /* ===== 顶部导航 ===== */
+    #ep-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(247,242,232,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 52px;
+    }
+    #ep-nav-title {
+      font-size: 12px;
+      color: var(--text-mute);
+      letter-spacing: 3px;
+      font-family: var(--mono);
+    }
+    #ep-nav-tabs {
+      display: flex;
+      gap: 4px;
+    }
+    .ep-tab {
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--text-dim);
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 1px;
+      font-family: 'ZCOOL KuaiLe', sans-serif;
+    }
+    .ep-tab:hover { background: var(--surface2); color: var(--text); }
+    .ep-tab.active { background: rgba(200,160,48,0.12); color: var(--accent); border: 1px solid rgba(200,160,48,0.2); }
+
+    /* ===== 章节容器 ===== */
+    .ep-section {
+      display: none;
+      min-height: 100vh;
+      padding-top: 52px;
+    }
+    .ep-section.active { display: block; }
+
+    /* ===================================================
+       第一章：几天后（仿 village.html 对话引擎）
+    =================================================== */
+    #section-story {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 52px);
+      padding-top: 0;
+      margin-top: 52px;
+    }
+    #section-story.active {
+      display: flex;
+    }
+
+    /* 顶部场景标题 */
+    #story-header {
+      background: #ede4d0;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    #story-header-name {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+    #story-header-status {
+      font-size: 10px;
+      color: var(--text-mute);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    /* 对话滚动区 */
+    #story-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px 16px;
+      background: #f4ede0;
+    }
+    #story-content::-webkit-scrollbar { width: 4px; }
+    #story-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* 照片嵌入区 */
+    .story-photo {
+      text-align: center;
+      margin: 10px 0 18px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.5s, transform 0.5s;
+    }
+    .story-photo.show { opacity: 1; transform: translateY(0); }
+    .story-photo img {
+      max-width: 360px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      display: block;
+      margin: 0 auto 8px;
+      transform: rotate(-1deg);
+      filter: sepia(0.15) brightness(0.95);
+    }
+    .story-photo-caption {
+      font-size: 11px;
+      color: var(--text-mute);
+      font-family: var(--mono);
+      letter-spacing: 2px;
+    }
+
+    /* 气泡 CSS（与 village.html 保持一致） */
+    .wc-msg-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s, transform 0.25s;
+    }
+    .wc-msg-row.show { opacity: 1; transform: translateY(0); }
+    .wc-msg-row.right { flex-direction: row-reverse; }
+    .wc-av {
+      width: 38px; height: 38px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
+      font-family: var(--mono);
+      font-weight: bold;
+    }
+    .wc-av.kid    { background: linear-gradient(135deg,#d8eed8,#c0e0c0); color: #3a6a3a; border: 1px solid #a0c8a0; }
+    .wc-av.player { background: linear-gradient(135deg,#e0d8f0,#d0c8e8); color: #5a4880; border: 1px solid #b0a8d0; }
+    .wc-bubble-wrap { max-width: 68%; display: flex; flex-direction: column; }
+    .wc-name { font-size: 10px; color: var(--text-mute); margin-bottom: 4px; font-family: var(--mono); }
+    .wc-msg-row.right .wc-name { text-align: right; }
+    .wc-bubble {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.75;
+      word-break: break-word;
+    }
+    .wc-bubble.kid {
+      background: #e8f5e8; color: #2a4a2a;
+      border: 1px solid #b0d8b0; border-top-left-radius: 3px;
+    }
+    .wc-bubble.player {
+      background: #ece8f8; color: #3a2e58;
+      border: 1px solid #c0b8e0; border-top-right-radius: 3px;
+    }
+    .wc-bubble.sys {
+      background: transparent; border: none;
+      color: var(--text-mute); font-size: 11px;
+      text-align: center; padding: 4px 0;
+      font-family: var(--mono); width: 100%;
+    }
+    .wc-typing-cursor {
+      display: inline-block;
+      width: 2px; height: 13px;
+      background: #5a9060;
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 0.6s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .wc-typing-indicator {
+      display: flex; gap: 4px; align-items: center;
+      padding: 10px 14px;
+      background: #e8f5e8; border: 1px solid #b0d8b0;
+      border-radius: 10px; border-top-left-radius: 3px;
+    }
+    .wc-typing-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #5a9060;
+      animation: typing-bounce 1.2s ease-in-out infinite;
+    }
+    .wc-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .wc-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing-bounce {
+      0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* 章节切换提示 */
+    #story-footer {
+      flex-shrink: 0;
+      background: #ede4d0;
+      border-top: 1px solid var(--border);
+      padding: 14px 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #story-footer.show { display: flex; }
+    #story-next-btn {
+      padding: 10px 32px;
+      border: 1px solid rgba(138,96,48,0.35);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--accent);
+      cursor: pointer;
+      font-family: 'ZCOOL KuaiLe', sans-serif;
+      letter-spacing: 2px;
+      transition: background 0.2s;
+      background: rgba(138,96,48,0.06);
+    }
+    #story-next-btn:hover { background: rgba(138,96,48,0.14); }
+
+    /* ===================================================
+       第二章：小坏蛋的信（书信风格）
+    =================================================== */
+    #section-letter {
+      background: #f4ede0;
+      color: var(--ink);
+    }
+    .letter-page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .letter-envelope {
+      text-align: center;
+      margin-bottom: 40px;
+      opacity: 0;
+      transition: opacity 0.8s;
+    }
+    .letter-envelope.show { opacity: 1; }
+    .letter-envelope-icon { font-size: 48px; margin-bottom: 12px; }
+    .letter-envelope-label {
+      font-size: 11px;
+      color: var(--ink-dim);
+      letter-spacing: 3px;
+      border: 1px dashed rgba(42,30,20,0.2);
+      display: inline-block;
+      padding: 6px 20px;
+      border-radius: 4px;
+    }
+    .letter-paper {
+      background: #fffdf7;
+      border: 1px solid rgba(192,120,74,0.2);
+      border-radius: 4px;
+      padding: 48px 52px 52px;
+      position: relative;
+      box-shadow: 0 2px 20px rgba(42,30,20,0.08), 0 0 0 1px rgba(192,120,74,0.06);
+      opacity: 0;
+      transition: opacity 0.8s 0.3s;
+    }
+    .letter-paper.show { opacity: 1; }
+    .letter-paper::before {
+      content: '';
+      position: absolute;
+      top: 48px; left: 0; right: 0; bottom: 52px;
+      background-image: repeating-linear-gradient(
+        transparent, transparent 37px,
+        rgba(192,120,74,0.1) 37px, rgba(192,120,74,0.1) 38px
+      );
+      pointer-events: none;
+    }
+    .letter-paper::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; left: 72px;
+      width: 1px;
+      background: rgba(200,80,60,0.15);
+    }
+    .letter-content {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 17px;
+      color: #2a1e14;
+      line-height: 2.17;
+      position: relative;
+      z-index: 1;
+    }
+    .letter-title {
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink);
+      margin-bottom: 28px;
+      letter-spacing: 2px;
+    }
+    .letter-para {
+      margin-bottom: 20px;
+      text-indent: 2em;
+    }
+    .letter-sign {
+      text-align: right;
+      margin-top: 36px;
+    }
+    .letter-sign-name { font-size: 19px; color: var(--ink); margin-bottom: 6px; }
+    .letter-sign-date { font-size: 14px; color: var(--ink-dim); }
+    .letter-crease {
+      border-top: 1px dashed rgba(42,30,20,0.1);
+      margin: 28px -52px;
+    }
+    .letter-stamp {
+      position: absolute;
+      top: 32px; right: 40px;
+      width: 64px; height: 64px;
+      border: 2px solid rgba(192,74,74,0.4);
+      border-radius: 4px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: rgba(192,74,74,0.4);
+      font-size: 9px; letter-spacing: 1px;
+      transform: rotate(8deg);
+    }
+    .letter-stamp-icon { font-size: 20px; margin-bottom: 2px; }
+
+    .ep-footer {
+      text-align: center;
+      padding: 48px 24px 64px;
+      border-top: 1px solid rgba(42,30,20,0.08);
+    }
+    .ep-footer-text {
+      font-size: 12px;
+      color: var(--ink-dim);
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+      font-family: 'Courier New', monospace;
+    }
+    .ep-back-btn {
+      display: inline-block;
+      padding: 10px 28px;
+      border: 1px solid rgba(42,30,20,0.2);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--ink-dim);
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: background 0.2s, color 0.2s;
+      font-family: 'ZCOOL KuaiLe', sans-serif;
+    }
+    .ep-back-btn:hover { background: rgba(42,30,20,0.05); color: var(--ink); }
+
+    /* 来找我们吧 按钮 */
+    .ep-find-btn {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 12px 36px;
+      border: 1.5px solid rgba(192,120,74,0.5);
+      border-radius: 24px;
+      font-size: 14px;
+      color: var(--ca);
+      cursor: pointer;
+      letter-spacing: 3px;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      font-family: 'ZCOOL KuaiLe', sans-serif;
+      background: rgba(192,120,74,0.06);
+    }
+    .ep-find-btn:hover { background: rgba(192,120,74,0.14); border-color: rgba(192,120,74,0.8); }
+  </style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<div id="ep-nav">
+  <div id="ep-nav-title">第N个观测者 · 尾声</div>
+  <div id="ep-nav-tabs">
+    <div class="ep-tab active" id="tab-story" onclick="switchTab('story')">几天后</div>
+    <div class="ep-tab" id="tab-letter" onclick="switchTab('letter')">小坏蛋的信</div>
+  </div>
+</div>
+
+<!-- ===== 第一章：几天后 ===== -->
+<div class="ep-section active" id="section-story">
+  <div id="story-header">
+    <div id="story-header-name">玩家时空 · 几天后</div>
+    <div id="story-header-status">尾声</div>
+  </div>
+  <div id="story-content"></div>
+  <div id="story-footer">
+    <div id="story-next-btn" onclick="switchTab('letter')">小坏蛋的信 →</div>
+  </div>
+</div>
+
+<!-- ===== 第二章：小坏蛋的信 ===== -->
+<div class="ep-section" id="section-letter">
+  <div class="letter-page">
+    <div class="letter-envelope" id="le-envelope">
+      <div class="letter-envelope-icon">✉️</div>
+      <div class="letter-envelope-label">彩蛋解锁：小坏蛋的信</div>
+    </div>
+    <div class="letter-paper" id="le-paper">
+      <div class="letter-stamp">
+        <div class="letter-stamp-icon">🔴</div>
+        <div>云处村</div>
+        <div>三月三</div>
+      </div>
+      <div class="letter-content">
+        <div class="letter-title">致"我"的一封信</div>
+        <div class="letter-para">亲爱的"我"：</div>
+        <div class="letter-para">你好呀！我是9岁的你，我刚从山哈哈乐园摸完鱼回来，裤脚还沾着泥巴，现在正趴在古戏台的石阶上偷偷给你写信呢！</div>
+        <div class="letter-para">我想问问你："长大是不是很辛苦呀？会不会连光着脚丫在山哈哈乐园跑的时间都没有了，我可不要那样！"</div>
+        <div class="letter-para">妈妈总说"长大就不用天天帮奶奶喂鸡了"，我昨天看到爸爸对着手机在说什么凯皮唉，凯皮唉是什么，能换很多好吃的么？</div>
+        <div class="letter-para">长大是不是就不用写作业了，手指头就不会像我抓鱼时被水草缠住一样酸酸的？你去上班的时候有没有像我一样，偷偷在书包里藏一包辣条，趁老板不注意的时候塞进嘴里嚼得嘎嘣响？</div>
+        <div class="letter-crease"></div>
+        <div class="letter-para">对了，山哈哈乐园里的那条小溪，你还记得吗？今天那条花尾巴的小鱼可狡猾了，我刚伸手去抓，它就"嗖"地一下钻到石头缝里，溅了我一脸水！我本来想放弃的，结果它又游出来，好像在跟我捉迷藏，最后我蹲了半个钟头，终于把它抓到了——虽然最后还是把它放回去了，因为奶奶说"小鱼要找妈妈"。你可不能因为忙就忘了小溪的样子哦，要是你敢忘了，我就……我就在梦里变成小鱼，用尾巴甩你一脸水！</div>
+        <div class="letter-para">还有古戏台，你现在还会去那里跳舞吗？我昨天穿着奶奶给我缝的花布裙，在戏台的青石板上转圈圈，奶奶说"男孩子穿小花裙也很可爱"，我跳的是上个月刚学的采茶舞。虽然转得我头晕，差点撞到戏台的柱子，但是隔壁的阿婆夸我"跳得像小蝴蝶"，我可高兴啦！你是不是已经变成很厉害的大人了？有没有像我一样，看到路边有卖麦芽糖的，就想停下来买一块，然后被同事笑"还像个小孩子"？你可别听他们的，只要你开心就好了，谁还不是小孩子长大的了！</div>
+        <div class="letter-crease"></div>
+        <div class="letter-para">哦哦哦，还有村长爷爷家的糖罐！我只告诉你，昨天我又去他家要糖吃了，爷爷从那个掉漆的铁皮罐子里掏出一把水果糖，还问我"作业写完没"。我偷偷把数学作业本藏在他家的米缸后面，骗他说"写完啦"，他和我说"下次考100分，爷爷给你两颗糖"！你可不能因为长大了就不好意思去要糖吃，村长爷爷可喜欢我了，如果你长大了就忘记村长的话，我就……我就把你小时候尿床的秘密告诉隔壁的小花狗！</div>
+        <div class="letter-para">你觉得长大怎么样呀！我希望你以后能买一辆带天窗的汽车，这样我们就能在周末开着车去山哈哈乐园，把车停在溪边，躺在车里看星星——就像奶奶说的"天上的星星是地上人的眼睛"，我要数清楚哪颗是你的，哪颗是我的！我还希望你能租一个小田，不用很大，但是要能种奶奶教我的向日葵，等向日葵开花了，我就把种子寄给你，你种出来的向日葵肯定比我的还高！</div>
+        <div class="letter-crease"></div>
+        <div class="letter-para">对了，我还期待你能学会弹吉他！上次村里的阿铭哥哥在古戏台弹吉他，他唱的可好听了！你要是会弹吉他，就能在周末的时候弹给小花狗听。还有还有，我希望你能每个月给村长爷爷寄一包水果糖，就像他以前给我糖吃一样，这样爷爷就不会忘了我们啦！</div>
+        <div class="letter-para">好了，我知道你可能有很多事情要忙，上面的事情你都可以不做，但是请你一定要记得：</div>
+        <div class="letter-para" style="text-indent:0;padding-left:1em;border-left:3px solid rgba(192,120,74,0.3);">
+          要按时吃饭，不要像我一样把青菜偷偷喂给小花狗，妈妈说这样会长不高，我可是要变成一个顶天立地的大男子汉的！<br><br>
+          要多笑一笑，不要总是皱着眉头，这样会变老的，到时候我就比你好看啦——而且笑起来的时候，要像山哈哈乐园的太阳一样亮！<br><br>
+          要记得想我，想你的小时候在古戏台偷吃麦芽糖的日子，想你第一次帮奶奶喂鸡时，被大公鸡追着啄屁股的糗事。现在想起这事，我还害怕，我再也不要和公鸡玩了！<br><br>
+          最重要的是，要一直一直开心！要是你不开心，我就把我的水果糖分给你一颗——不过只能一颗哦，另一颗我要自己吃！
+        </div>
+        <div class="letter-crease"></div>
+        <div class="letter-para">虽然我可能帮不上你什么忙，但是我会在这里为你加油的！要是你遇到困难了，就想想我！还有安森叔叔，他虽然总是说"你还小，等你长大了就知道了"，如果你有什么不知道的他肯定知道，嘻嘻嘻嘻，你还要记得让他早点找对象！</div>
+        <div class="letter-para">祝你天天开心，不高兴的话就回来一起和我在山哈哈乐园抓鱼玩，我抓的肯定比你多得多！！</div>
+        <div class="letter-sign">
+          <div class="letter-sign-name">小坏蛋</div>
+          <div class="letter-sign-date">不知道第几年的三月三</div>
+        </div>
+      </div>
+    </div>
+    <div class="ep-footer">
+      <div class="ep-footer-text">第N个观测者 · 结局C · 尾声</div>
+      <div class="ep-back-btn" onclick="window.location.href='village.html'">← 返回云处村</div>
+      <br>
+      <div class="ep-find-btn" onclick="window.location.href='yunque.html'">来找我们吧 →</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== 对话引擎（与 village.html 保持一致） =====
+var C = null; // 当前对话容器
+
+function wcSys(text, cb) {
+  var row = document.createElement('div');
+  row.className = 'wc-msg-row';
+  var bub = document.createElement('div');
+  bub.className = 'wc-bubble sys';
+  bub.style.width = '100%';
+  bub.textContent = text;
+  row.appendChild(bub);
+  C.appendChild(row);
+  setTimeout(function() {
+    row.classList.add('show');
+    C.scrollTop = C.scrollHeight;
+    if (cb) setTimeout(cb, 300);
+  }, 20);
+}
+
+function wcPlayer(text, cb) {
+  var row = document.createElement('div');
+  row.className = 'wc-msg-row right';
+  var avEl = document.createElement('div');
+  avEl.className = 'wc-av player';
+  avEl.textContent = '你';
+  var wrap = document.createElement('div');
+  wrap.className = 'wc-bubble-wrap';
+  var nameEl = document.createElement('div');
+  nameEl.className = 'wc-name';
+  nameEl.textContent = '你';
+  var bub = document.createElement('div');
+  bub.className = 'wc-bubble player';
+  bub.textContent = text;
+  wrap.appendChild(nameEl);
+  wrap.appendChild(bub);
+  row.appendChild(wrap);
+  row.appendChild(avEl);
+  C.appendChild(row);
+  setTimeout(function() {
+    row.classList.add('show');
+    C.scrollTop = C.scrollHeight;
+    if (cb) setTimeout(cb, 200);
+  }, 20);
+}
+
+function wcNpc(avCls, avText, name, text, delay, cb) {
+  var indicRow = document.createElement('div');
+  indicRow.className = 'wc-msg-row';
+  var indicAv = document.createElement('div');
+  indicAv.className = 'wc-av ' + avCls;
+  indicAv.textContent = avText;
+  var indicWrap = document.createElement('div');
+  indicWrap.className = 'wc-bubble-wrap';
+  var indicBub = document.createElement('div');
+  indicBub.className = 'wc-typing-indicator';
+  indicBub.innerHTML = '<div class="wc-typing-dot"></div><div class="wc-typing-dot"></div><div class="wc-typing-dot"></div>';
+  indicWrap.appendChild(indicBub);
+  indicRow.appendChild(indicAv);
+  indicRow.appendChild(indicWrap);
+  C.appendChild(indicRow);
+  setTimeout(function() { indicRow.classList.add('show'); C.scrollTop = C.scrollHeight; }, 20);
+
+  setTimeout(function() {
+    C.removeChild(indicRow);
+    var row = document.createElement('div');
+    row.className = 'wc-msg-row';
+    var avEl = document.createElement('div');
+    avEl.className = 'wc-av ' + avCls;
+    avEl.textContent = avText;
+    var wrap = document.createElement('div');
+    wrap.className = 'wc-bubble-wrap';
+    var nameEl = document.createElement('div');
+    nameEl.className = 'wc-name';
+    nameEl.textContent = name;
+    var bub = document.createElement('div');
+    bub.className = 'wc-bubble ' + avCls;
+    wrap.appendChild(nameEl);
+    wrap.appendChild(bub);
+    row.appendChild(avEl);
+    row.appendChild(wrap);
+    C.appendChild(row);
+    setTimeout(function() { row.classList.add('show'); C.scrollTop = C.scrollHeight; }, 20);
+
+    // 逐字打字
+    var i = 0;
+    var cursor = document.createElement('span');
+    cursor.className = 'wc-typing-cursor';
+    bub.appendChild(cursor);
+    var speed = Math.max(18, Math.min(40, 1800 / text.length));
+    var timer = setInterval(function() {
+      if (i < text.length) {
+        bub.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+        C.scrollTop = C.scrollHeight;
+      } else {
+        clearInterval(timer);
+        bub.removeChild(cursor);
+        if (cb) setTimeout(cb, 200);
+      }
+    }, speed);
+  }, delay);
+}
+
+// 插入照片
+function wcPhoto(src, caption, cb) {
+  var wrap = document.createElement('div');
+  wrap.className = 'story-photo';
+  var img = document.createElement('img');
+  img.src = src;
+  img.alt = caption;
+  wrap.appendChild(img);
+  if (caption) {
+    var cap = document.createElement('div');
+    cap.className = 'story-photo-caption';
+    cap.textContent = caption;
+    wrap.appendChild(cap);
+  }
+  C.appendChild(wrap);
+  setTimeout(function() {
+    wrap.classList.add('show');
+    C.scrollTop = C.scrollHeight;
+    if (cb) setTimeout(cb, 400);
+  }, 20);
+}
+
+// 显示尾部按钮
+function showFooter() {
+  document.getElementById('story-footer').classList.add('show');
+}
+
+// ===== 剧情序列 =====
+function playStory() {
+  C = document.getElementById('story-content');
+  C.innerHTML = '';
+
+  wcSys('玩家的时空——几天后', function() {
+    wcSys('你所在时空的云处村，已经恢复了正常。', function() {
+      wcSys('但你知道，那里曾经发生过什么。', function() {
+        wcSys('那些记忆，将永远留在你心中。', function() {
+
+          wcSys('— 你停下车，前方是那块破旧的石碑——"云处村" —', function() {
+            wcSys('— 一个穿着畲族服饰的孩子正在路边玩耍 —', function() {
+              wcSys('— 孩子抬起头，对着你露出灿烂的笑容——两颗小虎牙，浅浅的酒窝 —', function() {
+
+                wcNpc('kid', '云', '孩子', '叔叔/阿姨，你是来玩的吗？', 900, function() {
+                  wcPlayer('是啊，我是来玩的。你……叫什么名字？', function() {
+                    wcNpc('kid', '云', '孩子', '我叫小云！叔叔/阿姨，我带你去村子里玩吧！', 800, function() {
+
+                      wcSys('— 孩子伸出小手 —', function() {
+                        wcSys('— 你低头，看着自己的手——身上穿着那件黄色外套 —', function() {
+                          wcSys('— 你牵起孩子的手，缓步走进村庄 —', function() {
+                            wcSys('— 身后，似乎有人在暗处按下了快门 —', function() {
+
+                              wcPhoto('images/photo-1.png', '云处村 · 三月三', function() {
+                                wcSys('一张照片被洗了出来。', function() {
+                                  wcSys('照片里，一个穿着黄色外套的人，牵着一个穿畲族衣服的孩子。', function() {
+                                    wcSys('孩子转过头，对着镜头笑。', function() {
+
+                                      setTimeout(function() {
+                                        wcSys('—— 画面淡出 ——', function() {
+                                          setTimeout(showFooter, 600);
+                                        });
+                                      }, 800);
+
+                                    });
+                                  });
+                                });
+                              });
+
+                            });
+                          });
+                        });
+                      });
+
+                    });
+                  });
+                });
+
+              });
+            });
+          });
+
+        });
+      });
+    });
+  });
+}
+
+// ===== 标签切换 =====
+function switchTab(tab) {
+  document.querySelectorAll('.ep-section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.ep-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('section-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (tab === 'letter') {
+    setTimeout(function() {
+      var env = document.getElementById('le-envelope');
+      if (env) env.classList.add('show');
+    }, 200);
+    setTimeout(function() {
+      var paper = document.getElementById('le-paper');
+      if (paper) paper.classList.add('show');
+    }, 700);
+  }
+}
+
+// 启动
+playStory();
+</script>
+
+</body>
+</html>

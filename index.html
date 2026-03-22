@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第N个观测者 · 序章</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- 屏幕闪烁特效层 -->
+<div id="screen-flash"></div>
+
+<!-- 照片弹窗 -->
+<div id="photo-modal">
+  <div class="modal-photo-frame" id="modal-photo-frame">
+    <div class="modal-photo-placeholder" id="modal-photo-placeholder">【照片素材待替换】</div>
+    <img id="modal-photo-img" src="" alt="照片" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:2px;">
+  </div>
+  <div class="modal-photo-desc" id="modal-photo-desc"></div>
+  <!-- 放大细节按钮（照片1专用） -->
+  <button class="modal-zoom-btn" id="modal-zoom-btn" style="display:none;">🔍 放大查看细节</button>
+  <button class="modal-close-btn" id="modal-close-btn">收起照片</button>
+</div>
+
+<!-- 右上角邮件提醒 -->
+<div id="email-toast">
+  <div id="email-toast-inner">
+    <span id="email-toast-icon">📬</span>
+    <div id="email-toast-text">
+      <div id="email-toast-title">新邮件</div>
+      <div id="email-toast-sub">system.administrator · 极高风险</div>
+    </div>
+    <button id="email-toast-open">查看</button>
+  </div>
+</div>
+
+<!-- 页面内嵌邮件（底部展开） -->
+<div id="email-inline">
+  <div id="email-inline-inner">
+    <div class="email-titlebar">
+      <span>📬 新邮件 — 极高风险</span>
+      <span class="email-titlebar-dot"></span>
+    </div>
+    <div class="email-meta">
+      <div><strong>发件人：</strong>system.administrator@unknown_origin</div>
+      <div><strong>状态：</strong><span class="danger">极高风险 / 阅后即焚</span></div>
+      <div><strong>安全等级：</strong>███████░░░ 70%</div>
+    </div>
+    <div class="email-body">
+      <p>好奇心是逻辑崩塌的开始，请立刻停止你的行为。</p>
+      <br>
+      <p>我们注意到你已经冲洗了那卷不属于你的胶片。<br>
+      请你立刻烧掉那张长满杂草的小径照片，不要试图分辨石碑上的文字。</p>
+      <br>
+      <p>最后一次警告：假装这一切从未发生。</p>
+      <br>
+      <p>如果你在今晚零点前依然没有停止调查，你的<span class="corrupted">%¥#</span>将会被<span class="corrupted">&amp;*…@%</span>亲自取走。</p>
+    </div>
+    <div class="email-footer">
+      发件地址来自——<strong>你的背后</strong>
+    </div>
+    <button class="email-confirm-btn" id="email-confirm-btn">我知道了</button>
+  </div>
+</div>
+
+<!-- 主场景 -->
+<div id="scene-container">
+
+  <div class="scene-title" id="scene-title"></div>
+
+  <!-- 搜索框（可交互） -->
+  <div class="search-box" id="search-box-1">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="输入搜索内容..." autocomplete="off">
+      <button id="search-btn">搜索</button>
+    </div>
+    <div id="search-result"></div>
+  </div>
+
+  <!-- 动态面板区域 -->
+  <div id="panels"></div>
+
+  <!-- 相机行：相机 + 继续按钮横排 -->
+  <div id="camera-row">
+    <div class="item-camera" id="item-camera">
+      <img src="images/camera.png" alt="二手胶片相机" class="camera-img">
+      <span>二手胶片相机</span>
+    </div>
+    <button id="next-btn">继续 ▶</button>
+  </div>
+
+  <!-- 胶片展开区 -->
+  <div id="film-strip">
+    <div class="film-header">
+      <div class="film-hole"></div>
+      <div class="film-hole"></div>
+      <div class="film-label">KODAK · 36EXP · ISO400</div>
+      <div class="film-hole"></div>
+      <div class="film-hole"></div>
+    </div>
+    <div class="film-body">
+      <div class="photo-slot" id="photo-slot-1">
+        <img src="images/photo-1.png" alt="第一张照片" class="photo-thumb">
+        <span class="photo-number-overlay">01</span>
+      </div>
+      <div class="photo-slot" id="photo-slot-2">
+        <img src="images/photo-2.png" alt="第二张照片" class="photo-thumb">
+        <span class="photo-number-overlay">02</span>
+      </div>
+      <div class="photo-slot" style="opacity:0.3; cursor:default;">
+        <span class="photo-number">03</span>
+      </div>
+      <div class="photo-slot" style="opacity:0.3; cursor:default;">
+        <span class="photo-number">04</span>
+      </div>
+    </div>
+    <div class="film-footer">
+      <div class="film-hole"></div>
+      <div class="film-hole"></div>
+      <div class="film-hole"></div>
+    </div>
+  </div>
+
+
+</div>
+
+<script src="js/game.js"></script>
+</body>
+</html>

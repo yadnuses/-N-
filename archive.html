@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>档案资料 - 云处村人民政府</title>
+  <link rel="stylesheet" href="css/gov.css">
+  <style>
+    .archive-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    /* 搜索区 */
+    .archive-search-wrap {
+      background: linear-gradient(135deg, #f2f8f3, #eaf4ec);
+      border: 1px solid #d0e8d4;
+      border-radius: 4px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 8px rgba(42,110,63,0.07);
+    }
+    .archive-search-label {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .archive-search-label span {
+      color: #2a6e3f;
+      font-weight: bold;
+    }
+    .archive-search-row {
+      display: flex;
+      gap: 0;
+    }
+    .archive-search-row input {
+      flex: 1;
+      height: 38px;
+      padding: 0 14px;
+      border: 1px solid #b8d8c0;
+      border-right: none;
+      border-radius: 2px 0 0 2px;
+      font-size: 13px;
+      outline: none;
+      background: rgba(255,255,255,0.92);
+      color: #333;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+    }
+    .archive-search-row input::placeholder {
+      color: #aaa;
+      font-family: 'Microsoft YaHei', sans-serif;
+      letter-spacing: 0;
+      font-size: 12px;
+    }
+    .archive-search-row button {
+      height: 38px;
+      padding: 0 24px;
+      background: linear-gradient(135deg, #1e5530, #2a6e3f);
+      color: #fff;
+      border: none;
+      border-radius: 0 2px 2px 0;
+      font-size: 13px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .archive-search-row button:hover {
+      background: linear-gradient(135deg, #163d23, #1e5530);
+    }
+    .archive-search-tip {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    /* 档案标题栏 */
+    .archive-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .archive-header .bar {
+      display: inline-block;
+      width: 4px;
+      height: 20px;
+      background: #2a6e3f;
+      border-radius: 2px;
+    }
+    .archive-header span {
+      font-size: 16px;
+      font-weight: bold;
+      color: #1a3a28;
+      letter-spacing: 1px;
+    }
+    .archive-header .count {
+      font-size: 12px;
+      color: #aaa;
+      font-weight: normal;
+      margin-left: 6px;
+    }
+
+    /* 档案卡片网格 */
+    .archive-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .archive-card {
+      background: linear-gradient(180deg, #fff 0%, #fafcf9 100%);
+      border: 1px solid #d0e8d4;
+      border-top: 3px solid #2a6e3f;
+      border-radius: 3px;
+      padding: 18px 18px 14px;
+      box-shadow: 0 2px 8px rgba(42,110,63,0.06);
+      position: relative;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .archive-card:hover {
+      box-shadow: 0 6px 20px rgba(42,110,63,0.12);
+      transform: translateY(-2px);
+    }
+
+    /* 特殊卡片：NO.000 */
+    .archive-card.special {
+      border-top-color: #888;
+      background: linear-gradient(180deg, #f8f8f8 0%, #f2f2f2 100%);
+      border-color: #ccc;
+    }
+    .archive-card.special .card-no { color: #666; }
+
+    /* 乱码卡片：NO.005-099 */
+    .archive-card.corrupted {
+      border-top-color: #c0392b;
+      background: linear-gradient(180deg, #fff8f8 0%, #fff2f2 100%);
+      border-color: #e8c4c4;
+      grid-column: 1 / -1;
+    }
+
+    .card-no {
+      font-size: 11px;
+      color: #2a6e3f;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .card-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+    .card-role {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 14px;
+      min-height: 18px;
+    }
+    .card-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .card-status.online {
+      background: #eaf6ed;
+      color: #1e7a3a;
+      border: 1px solid #b8e0c4;
+    }
+    .card-status.waiting {
+      background: #f5f5f5;
+      color: #888;
+      border: 1px solid #ddd;
+    }
+    .card-status .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .card-status.online .dot {
+      background: #2ecc71;
+      box-shadow: 0 0 4px rgba(46,204,113,0.6);
+      animation: pulse 2s infinite;
+    }
+    .card-status.waiting .dot { background: #bbb; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* 乱码文本 */
+    .corrupted-body {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #c0392b;
+      line-height: 1.8;
+      word-break: break-all;
+      opacity: 0.75;
+    }
+    .corrupted-label {
+      font-size: 11px;
+      color: #c0392b;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    /* 搜索错误提示 */
+    #archive-tip {
+      display: none;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #c0392b;
+      letter-spacing: 0.5px;
+    }
+
+    /* 验证动画遮罩 */
+    #auth-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #050e07;
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    #auth-overlay.show { display: flex; }
+
+    #auth-terminal {
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      color: #4dff80;
+      max-width: 520px;
+      width: 90%;
+      line-height: 2.2;
+      text-shadow: 0 0 8px rgba(77,255,128,0.4);
+    }
+
+    .auth-line {
+      display: block;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      white-space: pre;
+    }
+    .auth-line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .auth-line.dim { color: rgba(77,255,128,0.4); font-size: 13px; }
+    .auth-line.bright {
+      color: #ffe066;
+      text-shadow: 0 0 12px rgba(255,224,102,0.7);
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    #auth-cursor {
+      display: inline-block;
+      width: 10px;
+      height: 17px;
+      background: #4dff80;
+      vertical-align: middle;
+      animation: blink 0.7s step-end infinite;
+      margin-left: 2px;
+      box-shadow: 0 0 6px rgba(77,255,128,0.8);
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  </style>
+</head>
+<body>
+
+<nav id="main-nav">
+  <div class="nav-inner">
+    <a href="yunchu-gov.html" class="nav-item">首页</a>
+    <a href="#" class="nav-item" onclick="return false;">政务新闻</a>
+    <a href="#" class="nav-item" onclick="return false;">村务管理</a>
+    <a href="archive.html" class="nav-item active">档案资料</a>
+    <a href="about.html" class="nav-item">走进云处</a>
+    <a href="contact.html" class="nav-item">联系方式</a>
+  </div>
+</nav>
+
+<div class="archive-container">
+
+  <!-- 搜索框 -->
+  <div class="archive-search-wrap">
+    <div class="archive-search-label">
+      提示：输入<span>云处村专属编码 ＋ 你的代号</span>以访问管理员网站
+    </div>
+    <div class="archive-search-row">
+      <input type="text" id="archive-input" placeholder="请输入访问码...">
+      <button onclick="doArchiveSearch()">访问</button>
+    </div>
+    <div id="archive-tip">访问码错误，权限不足。</div>
+    <div class="archive-search-tip">* 本档案系统仅供授权人员访问，所有操作均已记录</div>
+  </div>
+
+  <!-- 档案列表 -->
+  <div class="archive-header">
+    <span class="bar"></span>
+    <span>人员档案<span class="count">（共检索到 99 条记录）</span></span>
+  </div>
+
+  <div class="archive-grid">
+
+    <!-- NO.000 -->
+    <div class="archive-card special">
+      <div class="card-no">NO.000</div>
+      <div class="card-name">&#x4e乱&#x7801;&#x4e乱&#x7801;</div>
+      <div class="card-role">本源</div>
+      <div class="card-status waiting">
+        <span class="dot"></span>等待接入
+      </div>
+    </div>
+
+    <!-- NO.001 -->
+    <div class="archive-card">
+      <div class="card-no">NO.001</div>
+      <div class="card-name">潘<span style="font-family:'Courier New';color:#aaa;font-size:14px;">&#x2593;&#x2593;</span></div>
+      <div class="card-role">总负责人</div>
+      <div class="card-status online">
+        <span class="dot"></span>在线
+      </div>
+    </div>
+
+    <!-- NO.002 -->
+    <div class="archive-card">
+      <div class="card-no">NO.002</div>
+      <div class="card-name">丁<span style="font-family:'Courier New';color:#aaa;font-size:14px;">&#x2593;&#x2593;</span></div>
+      <div class="card-role">联合<span style="font-family:'Courier New';color:#aaa;font-size:13px;">&#x2593;&#x2593;</span></div>
+      <div class="card-status online">
+        <span class="dot"></span>在线
+      </div>
+    </div>
+
+    <!-- NO.003 -->
+    <div class="archive-card">
+      <div class="card-no">NO.003</div>
+      <div class="card-name">曾<span style="font-family:'Courier New';color:#aaa;font-size:14px;">&#x2593;&#x2593;</span></div>
+      <div class="card-role">信息管控</div>
+      <div class="card-status online">
+        <span class="dot"></span>在线
+      </div>
+    </div>
+
+    <!-- NO.004 -->
+    <div class="archive-card">
+      <div class="card-no">NO.004</div>
+      <div class="card-name">武<span style="font-family:'Courier New';color:#aaa;font-size:14px;">&#x2593;&#x2593;</span></div>
+      <div class="card-role">记忆<span style="font-family:'Courier New';color:#aaa;font-size:13px;">&#x2593;&#x2593;</span></div>
+      <div class="card-status online">
+        <span class="dot"></span>在线
+      </div>
+    </div>
+
+    <!-- NO.005-099 -->
+    <div class="archive-card corrupted">
+      <div class="card-no" style="color:#c0392b;">NO.005 — NO.099</div>
+      <div class="corrupted-label">▓ 数据异常 · 无法解析</div>
+      <div class="corrupted-body">
+        &#x2593;&#x2592;&#x2591;N&#x2593;&#x25A0;&#x2592;O&#x2591;&#x2593;.&#x25A0;&#x2592;0&#x2593;&#x2591;0&#x2592;&#x25A0;5&#x2593;&#x2591;
+        &#x25A1;&#x2592;&#x2593;&#x6f22;&#x5b57;&#x2591;&#x2593;&#x25A0;&#x2592;&#x25A1;&#x5c71;&#x2593;&#x2591;&#x2592;&#x25A0;
+        &#x5ddd;&#x2593;&#x2592;&#x2591;&#x25A1;&#x2593;&#x25A0;&#x6751;&#x2592;&#x2591;&#x2593;&#x25A1;&#x5c71;&#x2592;&#x2593;
+        &#x6d4b;&#x2591;&#x2593;&#x25A0;&#x8005;&#x2592;&#x2593;&#x2591;&#x25A1;&#x2592;&#x2593;&#x25A0;N&#x2591;&#x2593;&#x2592;
+        &#x2591;&#x25A0;&#x4e91;&#x2593;&#x2592;&#x5904;&#x2591;&#x2593;&#x25A1;&#x2592;&#x25A0;&#x2593;&#x6751;&#x2591;&#x2592;
+        &#x5c71;&#x2593;&#x25A0;&#x2592;&#x2591;&#x4e91;&#x2593;&#x2592;&#x25A1;&#x5904;&#x2591;&#x2593;&#x25A0;&#x2592;&#x2593;
+        &#x25A1;&#x2591;&#x4e91;&#x2592;&#x2593;&#x25A0;&#x5904;&#x2591;&#x2592;&#x2593;&#x25A1;&#x2592;&#x25A0;&#x2593;&#x2591;
+        &#x2592;&#x4e91;&#x25A1;&#x5904;&#x2593;&#x2592;&#x2591;&#x25A0;&#x2593;&#x2592;&#x25A1;&#x2591;&#x2593;&#x25A0;&#x2592;
+        &#x2593;&#x2591;&#x25A1;&#x2592;&#x2593;&#x25A0;&#x2591;&#x2592;&#x4e91;&#x2593;&#x25A1;&#x5904;&#x2592;&#x2591;&#x2593;
+        &#x25A0;&#x2592;&#x2593;&#x2591;&#x25A1;&#x2592;&#x25A0;&#x2593;&#x2591;&#x2592;&#x25A1;&#x2593;&#x25A0;&#x2592;&#x2591;
+        &#x2593;&#x25A1;&#x2592;&#x25A0;&#x2591;&#x2593;&#x2592;&#x25A1;&#x2593;&#x2591;&#x25A0;&#x2592;&#x2593;&#x25A1;&#x2591;
+        &#x2592;&#x25A0;&#x2593;&#x2591;&#x2592;&#x25A1;&#x2593;&#x25A0;&#x2592;&#x2591;&#x2593;&#x25A1;&#x2592;&#x2593;&#x25A0;
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 底部 -->
+<footer id="site-footer">
+  <div class="footer-inner">
+    <div class="footer-info">
+      <p>主办单位：云处村村民委员会 &nbsp;|&nbsp; 技术支持：县政务信息中心</p>
+      <p>地址：[已屏蔽] &nbsp;|&nbsp; 邮编：[已屏蔽] &nbsp;|&nbsp; 联系电话：[已屏蔽]</p>
+    </div>
+    <div class="footer-links">
+      <a href="#">网站地图</a>
+      <a href="#">隐私声明</a>
+      <a href="#">版权声明</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 1998 云处村人民政府 &nbsp;|&nbsp; 浙ICP备 [已屏蔽] 号
+  </div>
+</footer>
+
+<!-- 验证动画遮罩 -->
+<div id="auth-overlay">
+  <div id="auth-terminal">
+    <span class="auth-line dim" id="al0">YUNCHU ARCHIVE SYSTEM v3.2.1</span>
+    <span class="auth-line dim" id="al1">────────────────────────────────</span>
+    <span class="auth-line" id="al2">【系统提示】</span>
+    <span class="auth-line" id="al3">&gt; 身份验证通过。</span>
+    <span class="auth-line" id="al4">&gt;</span>
+    <span class="auth-line bright" id="al5">&gt; 欢迎回来，No.000。</span>
+    <span class="auth-line" id="al6">&gt;</span>
+    <span class="auth-line" id="al7">&gt; 您已失联 1,847 天。</span>
+    <span class="auth-line dim" id="al8">────────────────────────────────</span>
+    <span class="auth-line dim" id="al9">正在载入耘雀内网<span id="auth-cursor"></span></span>
+  </div>
+</div>
+
+<script>
+function doArchiveSearch() {
+  var val = document.getElementById('archive-input').value.trim();
+  var tip = document.getElementById('archive-tip');
+  if (!val) return;
+
+  if (val === '20260003000') {
+    tip.style.display = 'none';
+    startAuthAnimation();
+  } else {
+    tip.style.display = 'block';
+    tip.textContent = '访问码错误，权限不足。';
+  }
+}
+
+document.getElementById('archive-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doArchiveSearch();
+});
+
+function startAuthAnimation() {
+  var overlay = document.getElementById('auth-overlay');
+  overlay.classList.add('show');
+
+  var lines = ['al0','al1','al2','al3','al4','al5','al6','al7','al8','al9'];
+  var delays = [0, 200, 600, 1000, 1400, 1600, 2000, 2200, 2800, 3200];
+
+  for (var i = 0; i < lines.length; i++) {
+    (function(id, delay) {
+      setTimeout(function() {
+        document.getElementById(id).classList.add('visible');
+      }, delay);
+    })(lines[i], delays[i]);
+  }
+
+  // 跳转
+  setTimeout(function() {
+    window.location.href = 'intranet.html';
+  }, 4800);
+}
+</script>
+
+</body>
+</html>
