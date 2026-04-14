@@ -3,13 +3,12 @@
 milestone: M001
 current_slice: S06
 current_task: T06
-phase: apply-complete
-unify_required: true
+phase: unified
 rigor: standard
 project_type: application
 language: 中文
 auto_mode: false
-last_updated: 2026-04-14T19:17:37+08:00
+last_updated: 2026-04-14T20:35:00+08:00
 
 ## Progress
 
@@ -20,4 +19,4 @@ last_updated: 2026-04-14T19:17:37+08:00
 | S03 — 地图探索与多幕剧情 | completed |
 | S04 — 搜索解锁与隐藏档案 | completed |
 | S05 — 政务网站内容填充 | completed |
-| S06 — 整体 QA 与体验优化 | pending |
+| S06 — 整体 QA 与体验优化 | completed |
