@@ -1,0 +1,43 @@
+[
+  {
+    "name": "intranet search unlock chief",
+    "path": "intranet.html",
+    "errors": [],
+    "testResult": {
+      "success": true,
+      "hasChief": true,
+      "persists": true
+    }
+  },
+  {
+    "name": "news.html unlocked content",
+    "path": "news.html",
+    "errors": [],
+    "testResult": {
+      "success": true,
+      "chiefVisible": true,
+      "apoVisible": true
+    }
+  },
+  {
+    "name": "logs.html unlocked content",
+    "path": "logs.html",
+    "errors": [],
+    "testResult": {
+      "success": true,
+      "chiefVisible": true,
+      "apoVisible": true,
+      "smithVisible": true,
+      "headerVisible": true
+    }
+  },
+  {
+    "name": "archive.html access code",
+    "path": "archive.html",
+    "errors": [],
+    "testResult": {
+      "success": true,
+      "overlayVisible": true
+    }
+  }
+]

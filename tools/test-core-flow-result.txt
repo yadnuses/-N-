@@ -1,0 +1,27 @@
+{
+    "test1_introFlow": {
+        "navigatedToGov": true,
+        "consoleErrors": 0,
+        "errorMessages": []
+    },
+    "test2_localStorage": {
+        "chatProgressRestored": true,
+        "saveData": {
+            "chatProgress": 8,
+            "maxProgress": 8,
+            "radioStarted": false,
+            "foerStarted": false,
+            "shadowStarted": false,
+            "researchStarted": false,
+            "revealStarted": false
+        }
+    },
+    "test3_slider": {
+        "sliderTrackExists": true,
+        "sliderThumbExists": true,
+        "panelChanged": true,
+        "panelBefore": "panel-chat",
+        "panelAfter": "panel-log",
+        "choicesAvailable": 1
+    }
+}

@@ -1,0 +1,22 @@
+# State
+
+milestone: M001
+current_slice: S06
+current_task: T02
+phase: applying
+rigor: standard
+project_type: application
+language: 中文
+auto_mode: false
+last_updated: 2026-04-14
+
+## Progress
+
+| Slice | Status |
+|-------|--------|
+| S01 — 核心架构与主线对话 | completed |
+| S02 — 进度回溯与回放系统 | completed |
+| S03 — 地图探索与多幕剧情 | completed |
+| S04 — 搜索解锁与隐藏档案 | completed |
+| S05 — 政务网站内容填充 | completed |
+| S06 — 整体 QA 与体验优化 | pending |

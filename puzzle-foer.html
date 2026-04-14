@@ -805,8 +805,8 @@
       var unlockedCount = 0;
 
       for (var clueId in clueData) { if (!clueData.hasOwnProperty(clueId)) continue; var data = clueData[clueId];
-        var element = document.getElementById('clue-' + clueId.toLowerCase());
-        var reviewElement = document.getElementById('review-' + clueId.toLowerCase());
+        var element = document.getElementById('clue-' + clueId.toLowerCase().replace(/-/g, ''));
+        var reviewElement = document.getElementById('review-' + clueId.toLowerCase().replace(/-/g, ''));
 
         if (data.unlocked && element) {
           unlockedCount++;

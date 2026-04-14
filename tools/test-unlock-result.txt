@@ -1,0 +1,30 @@
+S06-T04 Search Unlock and Hidden Content Test
+Base URL: http://localhost:8080
+
+=== intranet search unlock chief ===
+searchUnlocked: {"chief":true}
+Chief unlocked: true, persists after reload: true
+Console errors: 0
+Status: PASS
+
+=== news.html unlocked content ===
+news-chief visible: true
+news-apo visible: true
+Console errors: 0
+Status: PASS
+
+=== logs.html unlocked content ===
+jm-chief visible: true
+jm-apo visible: true
+jm-smith visible: true
+jm-villagers-header visible: true
+Console errors: 0
+Status: PASS
+
+=== archive.html access code ===
+Auth overlay shown after code 20260003000: true
+Console errors: 0
+Status: PASS
+
+Overall: PASS
+No fixes required — all unlock mechanisms work as designed.

@@ -291,7 +291,6 @@ function openPhotoModal(photoNum) {
   var modal = document.getElementById('photo-modal');
   var desc = document.getElementById('modal-photo-desc');
   var imgEl = document.getElementById('modal-photo-img');
-  var placeholder = document.getElementById('modal-photo-placeholder');
   var zoomBtn = document.getElementById('modal-zoom-btn');
   var frame = document.getElementById('modal-photo-frame');
 
@@ -301,8 +300,6 @@ function openPhotoModal(photoNum) {
 
   if (photoNum === 1) {
     imgEl.src = 'images/photo-1.png';
-    imgEl.style.display = 'block';
-    placeholder.style.display = 'none';
 
     desc.innerHTML = '<strong>第一张照片</strong><br><br>' +
       '一张长满杂草的小径，画面中央立着一块破旧的石碑，上面模糊地刻着"云处村"三个字。<br><br>' +
@@ -329,8 +326,6 @@ function openPhotoModal(photoNum) {
 
   } else if (photoNum === 2) {
     imgEl.src = 'images/photo-2.png';
-    imgEl.style.display = 'block';
-    placeholder.style.display = 'none';
 
     desc.innerHTML = '<strong>第二张照片</strong><br><br>' +
       '一张合影，形形色色的人穿着畲族的服装，站在一个广场上。<br><br>' +

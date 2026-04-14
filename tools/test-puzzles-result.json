@@ -1,0 +1,45 @@
+{
+  "results": [
+    {
+      "page": "puzzle-origin.html",
+      "errors": [],
+      "success": true,
+      "nav": true,
+      "notes": "Multiple choice B,B,C verified"
+    },
+    {
+      "page": "puzzle-foer.html",
+      "errors": [],
+      "success": true,
+      "nav": true,
+      "notes": "Multiple choice B verified"
+    },
+    {
+      "page": "puzzle-chief.html",
+      "errors": [],
+      "success": true,
+      "nav": true,
+      "notes": "Text answer '同一人' verified"
+    },
+    {
+      "page": "puzzle-shadow.html",
+      "errors": [],
+      "success": true,
+      "nav": true,
+      "interactive_elements": 14
+    },
+    {
+      "page": "puzzle-pilot.html",
+      "errors": [],
+      "success": true,
+      "nav": true,
+      "interactive_elements": 2
+    }
+  ],
+  "fixes": [
+    "puzzle-origin.html: Extracted inline script to js/puzzle-origin.js to resolve parsing error",
+    "All 5 puzzles: Fixed clue ID mismatch (clue-1-a -> clue-1a) via .replace(/-/g, '')",
+    "Dev server restarted from correct repo directory"
+  ],
+  "overall_pass": true
+}

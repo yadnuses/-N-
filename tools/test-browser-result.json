@@ -1,0 +1,51 @@
+[
+  {
+    "name": "index.html",
+    "width": 1280,
+    "height": 800,
+    "scrollHeight": 800,
+    "hasHorizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "index.html",
+    "width": 375,
+    "height": 667,
+    "scrollHeight": 717,
+    "hasHorizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "intranet.html",
+    "width": 1280,
+    "height": 800,
+    "scrollHeight": 1451,
+    "hasHorizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "intranet.html",
+    "width": 375,
+    "height": 667,
+    "scrollHeight": 2414,
+    "hasHorizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "index.html",
+    "interactions": {
+      "modalTriggerExists": false,
+      "emailExists": false
+    },
+    "errors": []
+  },
+  {
+    "name": "intranet.html",
+    "interactions": {
+      "chatChoicesExist": false,
+      "searchBarExists": true,
+      "sliderExists": false
+    },
+    "errors": []
+  }
+]

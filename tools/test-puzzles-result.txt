@@ -1,0 +1,41 @@
+S06-T03 Puzzle System End-to-End Test
+Base URL: http://localhost:8080
+
+=== Testing puzzle-origin.html ===
+Console errors: []
+Success feedback: True (multiple choice B, B, C)
+Nav link present: True
+
+=== Testing puzzle-foer.html ===
+Console errors: []
+Success feedback: True (multiple choice B)
+Nav link present: True
+
+=== Testing puzzle-chief.html ===
+Console errors: []
+Success feedback: True (text answer "同一人")
+Nav link present: True
+
+=== Testing puzzle-shadow.html ===
+Console errors: []
+Interactive elements: 14
+Nav link present: True
+
+=== Testing puzzle-pilot.html ===
+Console errors: []
+Interactive elements: 2
+Nav link present: True
+
+Fixes applied:
+- puzzle-origin.html: Extracted inline script to js/puzzle-origin.js to resolve "Invalid or unexpected token" parsing error
+- All 5 puzzle pages: Fixed systematic clue ID mismatch (clue-1-a -> clue-1a) by adding .replace(/-/g, '')
+- Dev server restarted from correct repo directory (/Users/xiaoy/Documents/GitHub/-N-)
+
+=== Summary ===
+puzzle-origin.html: PASS
+puzzle-foer.html: PASS
+puzzle-chief.html: PASS
+puzzle-shadow.html: PASS
+puzzle-pilot.html: PASS
+
+Overall: PASS

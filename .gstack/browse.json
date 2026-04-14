@@ -1,7 +1,7 @@
 {
-  "pid": 88076,
-  "port": 13878,
-  "token": "1c44c587-7263-4a2e-9a8a-1d97ab11016a",
-  "startedAt": "2026-03-23T08:58:22.384Z",
+  "pid": 74765,
+  "port": 23399,
+  "token": "2b4e622f-2850-4c2a-bfc0-e03936e9b9b0",
+  "startedAt": "2026-04-14T06:20:04.541Z",
   "serverPath": "/Users/xiaoy/.claude/skills/gstack/browse/src/server.ts"
 }

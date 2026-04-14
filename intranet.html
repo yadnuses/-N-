@@ -284,7 +284,7 @@
       border-radius: 2px;
       margin-top: 16px;
       padding: 20px;
-      max-height: 400px;
+      max-height: 520px;
       overflow-y: auto;
     }
 
@@ -1518,27 +1518,6 @@
       position: relative;
     }
 
-    /* ===== 村庄动态监控 Toast（潘安森） - 邮件风格 ===== */
-    #monitor-toast {
-      position: fixed;
-      top: 80px;
-      right: -340px;
-      width: 320px;
-      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-      border: 1px solid #e0e0e0;
-      border-left: 4px solid var(--gov-gold);
-      border-radius: 8px;
-      padding: 16px 18px;
-      z-index: 500;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
-      transition: right 0.4s cubic-bezier(.22,.68,0,1.3);
-      cursor: pointer;
-    }
-    #monitor-toast.show { right: 20px; }
-    #monitor-toast:hover {
-      box-shadow: 0 12px 40px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
-      transform: translateX(-4px);
-    }
 
     /* ===== 第二段 Toast（曾佳秋） - 邮件风格 ===== */
     #map-toast {
@@ -3684,13 +3663,6 @@
   <div class="map-toast-preview">你看到地图了，我来告诉你云处村的事。</div>
 </div>
 
-<!-- 村庄动态监控触发Toast（潘安森） -->
-<div id="monitor-toast" onclick="openMonitorChat()">
-  <div class="toast-label"><span class="toast-dot"></span>即时消息 · 来自 NO.001 潘安森</div>
-  <div class="toast-name">潘安森</div>
-  <div class="toast-preview">000，你看了多少了？</div>
-</div>
-
 <!-- 进入云处村：祥云动画遮罩 -->
 <div id="village-entrance" style="display:none;">
   <canvas id="cloud-canvas"></canvas>
@@ -4026,24 +3998,29 @@ function switchPanel(panelId, navLabel) {
     var si = document.getElementById('map-scroll-inner');
     if (si) si.classList.remove('unrolled');
   }
-  // 切回对话面板时，若 choice-row 为空且进度停在等待选择节点，重新显示选项
+  // 切回对话面板时，若进度>=18且未触发过监控对话，自动开始第四章对话
   if (panelId === 'panel-chat') {
     // 未开始聊天时显示等待提示
     var chatHint = document.getElementById('chat-empty-hint');
     if (chatHint) chatHint.style.display = (!chatStarted) ? 'block' : 'none';
-    setTimeout(function() {
-      var cr = document.getElementById('choice-row');
-      if (cr && cr.children.length === 0 && monitorChatStarted) {
-        if (chatProgress === 19) {
-          repeatSuspectChoice();
-        } else if (chatProgress === 20) {
-          showPlayerChoice('我准备好了，开始行动。', 0, function() {
-            setChatProgress(21);
-            setTimeout(function() { switchPanel('panel-radio', ''); startRadioScene(); }, 600);
-          });
+    if (chatProgress >= 18 && !monitorChatStarted) {
+      setMonitorChatStarted(true);
+      startMonitorChat();
+    } else {
+      setTimeout(function() {
+        var cr = document.getElementById('choice-row');
+        if (cr && cr.children.length === 0 && monitorChatStarted) {
+          if (chatProgress === 19) {
+            repeatSuspectChoice();
+          } else if (chatProgress === 20) {
+            showPlayerChoice('我准备好了，开始行动。', 0, function() {
+              setChatProgress(21);
+              setTimeout(function() { switchPanel('panel-radio', ''); startRadioScene(); }, 600);
+            });
+          }
         }
-      }
-    }, 80);
+      }, 80);
+    }
   }
   // 已看过的剧情面板：若 feed/terminal 为空则重新填充（回放模式）
   if (panelId === 'panel-radio' && radioStarted) {
@@ -4418,7 +4395,7 @@ var logScript = [
   { phase: 17, type: 'player', text: '怎么认证？',                                 time: '22:36' },
   // 阶段18：曾的指引
   { phase: 18, type: 'zeng',   text: '点击"工作日志"，输入密码：【YUNQUE-000】',  time: '22:36' },
-  { phase: 18, type: 'zeng',   text: '然后，你会看到我们所有的记录。',             time: '22:36' },
+  { phase: 18, type: 'zeng',   text: '然后，你会看到我们部分的记录，村长和阿婆的信息有一部分隐藏在搜索数据库里，你需要手动查询。', time: '22:36' },
   { phase: 18, type: 'zeng',   text: '你需要从中找到真相，然后…… 你有任何计划，都可以告诉安森，让他帮你完成。', time: '22:36' },
   // 阶段19：潘安森就村庄动态监控后出现
   { phase: 19, type: 'sys',    text: '即时消息 · 来自 NO.001 潘安森',          time: '23:04' },
@@ -4465,10 +4442,6 @@ function openLogPanel() {
   updateChapterSidebar();
   renderChapterMessages(currentLogChapter);
 
-  // 如果村庄动态监控对话待触发，在聊天记录显示后弹出提示
-  if (chatProgress >= 18 && !monitorChatStarted) {
-    setTimeout(function() { showMonitorToast(); }, 1500);
-  }
 }
 
 function showChapter(chId) {
@@ -5308,7 +5281,7 @@ function startMapChat() {
                               setChatProgress(17);
                               var t7 = 850;
                               addMsg(zeng, '点击"工作日志"，输入密码：【YUNQUE-000】', t7); t7 += 1360;
-                              addMsg(zeng, '然后，你会看到我们所有的记录。', t7); t7 += 1190;
+                              addMsg(zeng, '然后，你会看到我们部分的记录，村长和阿婆的信息有一部分隐藏在搜索数据库里，你需要手动查询。', t7); t7 += 1190;
                               addMsg(zeng, '你需要从中找到真相，然后…… 你有任何计划，都可以告诉安森，让他帮你完成。', t7, function() {
                                 setChatProgress(18);
                               });
@@ -5933,7 +5906,7 @@ function resumeChatFromProgress(progress) {
   if (p >= 17) {
     addPlayerSilent('怎么认证？');
     addMsgSilent(zeng, '点击"工作日志"，输入密码：【YUNQUE-000】');
-    addMsgSilent(zeng, '然后，你会看到我们所有的记录。');
+    addMsgSilent(zeng, '然后，你会看到我们部分的记录，村长和阿婆的信息有一部分隐藏在搜索数据库里，你需要手动查询。');
     addMsgSilent(zeng, '你需要从中找到真相，然后…… 你有任何计划，都可以告诉安森，让他帮你完成。');
   }
   if (p >= 19) {
@@ -6065,7 +6038,7 @@ function resumeChatFromProgress(progress) {
                               setChatProgress(17);
                               var t6 = 850;
                               addMsg(zeng, '点击"工作日志"，输入密码：【YUNQUE-000】', t6); t6 += 1360;
-                              addMsg(zeng, '然后，你会看到我们所有的记录。', t6); t6 += 1190;
+                              addMsg(zeng, '然后，你会看到我们部分的记录，村长和阿婆的信息有一部分隐藏在搜索数据库里，你需要手动查询。', t6); t6 += 1190;
                               addMsg(zeng, '你需要从中找到真相，然后…… 你有任何计划，都可以告诉安森，让他帮你完成。', t6, function() {
                                 setChatProgress(18);
                               });
@@ -6233,7 +6206,7 @@ function resumeFrom14() {
 function resumeFrom17() {
   var t = 850;
   addMsg(zeng, '点击"工作日志"，输入密码：【YUNQUE-000】', t); t += 1360;
-  addMsg(zeng, '然后，你会看到我们所有的记录。', t); t += 1190;
+  addMsg(zeng, '然后，你会看到我们部分的记录，村长和阿婆的信息有一部分隐藏在搜索数据库里，你需要手动查询。', t); t += 1190;
   addMsg(zeng, '你需要从中找到真相，然后…… 你有任何计划，都可以告诉安森，让他帮你完成。', t, function() {
     setChatProgress(18);
   });
@@ -6242,25 +6215,6 @@ function resumeFrom17() {
 // ===== 村庄动态监控：离开面板时触发 =====
 function leaveMonitorPanel() {
   switchPanel('panel-home', '');
-  // 只在进度>=18且未触发过监控对话时触发
-  if (chatProgress >= 18 && !monitorChatStarted) {
-    setTimeout(function() { showMonitorToast(); }, 1200);
-  }
-}
-
-function showMonitorToast() {
-  var toast = document.getElementById('monitor-toast');
-  toast.classList.add('show');
-  setTimeout(function() { toast.classList.remove('show'); }, 12000);
-}
-
-function openMonitorChat() {
-  document.getElementById('monitor-toast').classList.remove('show');
-  switchPanel('panel-chat', '');
-  if (!monitorChatStarted) {
-    setMonitorChatStarted(true);
-    startMonitorChat();
-  }
 }
 
 function startMonitorChat() {
@@ -7777,7 +7731,8 @@ const searchableDatabase = [
     content: '村长是一个关键人物。他非常害怕死亡，总是在等待什么。他在等待自己孩子的归来...',
     keywords: ['村长', '等待', '孩子', '阿云', '执念'],
     link: 'news.html',
-    unlocked: true
+    unlocked: true,
+    unlockFlag: 'chief'
   },
   {
     id: 'clue-003',
@@ -7786,67 +7741,109 @@ const searchableDatabase = [
     content: '阿婆是村里最年长的老人。她知道很多关于云处村的古老传说...',
     keywords: ['阿婆', '传说', '凤凰神', '秘密'],
     link: 'news.html',
-    unlocked: true
+    unlocked: true,
+    unlockFlag: 'apo'
+  },
+  {
+    id: 'log-chief',
+    type: '工作日志',
+    title: '调查记录 · 村长之谜',
+    content: '【线索1-A：村长的执念】对讲机记录显示：村长经常念叨"阿云"，拿着一张旧照片独自哭泣。照片中是一个小女孩。【线索1-B：村门石等待者】发现一个奇怪现象：村长每天傍晚都会去村口"巡视"，但他从不靠近村门石。而那个坐在村门石旁等待的老人，只在村长离开后出现。',
+    keywords: ['村长', '村门石', '阿云', '执念', '等待'],
+    link: 'logs.html',
+    unlocked: true,
+    unlockFlag: 'chief'
+  },
+  {
+    id: 'log-apo',
+    type: '工作日志',
+    title: '调查记录 · 凤英阿婆',
+    content: '阿婆是村里最年长的老人。她知道很多关于云处村的古老传说...',
+    keywords: ['凤英阿婆', '阿婆', '传说', '凤凰神', '秘密'],
+    link: 'logs.html',
+    unlocked: true,
+    unlockFlag: 'apo'
+  },
+  {
+    id: 'log-smith',
+    type: '工作日志',
+    title: '调查记录 · 雷铁山',
+    content: '雷铁山是村里的铁匠，沉默寡言，但手艺精湛。他打制的银器在周边村庄很有名...',
+    keywords: ['雷铁山', '铁匠', '银锁', '小银锁'],
+    link: 'logs.html',
+    unlocked: true,
+    unlockFlag: 'smith'
   }
 ];
 
+// 搜索点击处理（解锁隐藏内容）
+function handleSearchClick(link, unlockFlag) {
+  if (unlockFlag) {
+    var unlocked = JSON.parse(localStorage.getItem('searchUnlocked') || '{}');
+    unlocked[unlockFlag] = true;
+    localStorage.setItem('searchUnlocked', JSON.stringify(unlocked));
+  }
+  location.href = link;
+}
+
 // 执行搜索
 function performGlobalSearch() {
-  const input = document.getElementById('global-search-input');
-  const keyword = input.value.trim().toLowerCase();
-  
+  var input = document.getElementById('global-search-input');
+  var keyword = input.value.trim().toLowerCase();
+
   if (!keyword) {
     return;
   }
-  
-  const results = searchableDatabase.filter(item => {
-    // 搜索关键词匹配
-    const keywordMatch = item.keywords.some(k => k.toLowerCase().includes(keyword));
-    // 标题匹配
-    const titleMatch = item.title.toLowerCase().includes(keyword);
-    // 内容匹配
-    const contentMatch = item.content.toLowerCase().includes(keyword);
-    
+
+  var results = searchableDatabase.filter(function(item) {
+    var keywordMatch = item.keywords.some(function(k) { return k.toLowerCase().indexOf(keyword) !== -1; });
+    var titleMatch = item.title.toLowerCase().indexOf(keyword) !== -1;
+    var contentMatch = item.content.toLowerCase().indexOf(keyword) !== -1;
     return (keywordMatch || titleMatch || contentMatch) && item.unlocked;
   });
-  
+
   displaySearchResults(results, keyword);
 }
 
 // 显示搜索结果
 function displaySearchResults(results, keyword) {
-  const panel = document.getElementById('search-results-panel');
-  const content = document.getElementById('search-results-content');
-  
+  var panel = document.getElementById('search-results-panel');
+  var content = document.getElementById('search-results-content');
+  var titleEl = document.querySelector('.search-results-title');
+  if (titleEl) titleEl.textContent = '📋 搜索结果（共 ' + results.length + ' 条）';
+
   if (results.length === 0) {
-    content.innerHTML = `
-      <div class="search-no-results">
-        <p>未找到与 "${keyword}" 相关的内容</p>
-        <p style="font-size: 12px; margin-top: 8px;">尝试其他关键词，如：潘安森、影子、时间循环</p>
-      </div>
-    `;
+    content.innerHTML =
+      '<div class="search-no-results">' +
+      '<p>未找到与 "' + keyword + '" 相关的内容</p>' +
+      '<p style="font-size: 12px; margin-top: 8px;">尝试其他关键词，如：潘安森、影子、时间循环</p>' +
+      '</div>';
   } else {
-    content.innerHTML = results.map(item => `
-      <div class="search-result-item" onclick="location.href='${item.link}'">
-        <div class="search-result-type">${item.type}</div>
-        <div class="search-result-title">${highlightKeyword(item.title, keyword)}</div>
-        <div class="search-result-desc">${highlightKeyword(item.content.substring(0, 100) + '...', keyword)}</div>
-      </div>
-    `).join('');
+    content.innerHTML = results.map(function(item) {
+      return (
+        '<div class="search-result-item" onclick="handleSearchClick(\'' + item.link + '\',\'' + (item.unlockFlag || '') + '\')">' +
+        '<div class="search-result-type">' + item.type + '</div>' +
+        '<div class="search-result-title">' + highlightKeyword(item.title, keyword) + '</div>' +
+        '<div class="search-result-desc">' + highlightKeyword(item.content.substring(0, 100) + '...', keyword) + '</div>' +
+        '</div>'
+      );
+    }).join('');
   }
-  
+
   panel.classList.add('active');
 }
 
 // 高亮关键词
 function highlightKeyword(text, keyword) {
-  const regex = new RegExp(`(${keyword})`, 'gi');
+  var regex = new RegExp('(' + keyword + ')', 'gi');
   return text.replace(regex, '<span class="search-result-match">$1</span>');
 }
 
 // 关闭搜索结果
 function closeSearchResults() {
-  const panel = document.getElementById('search-results-panel');
+  var panel = document.getElementById('search-results-panel');
+  var titleEl = document.querySelector('.search-results-title');
+  if (titleEl) titleEl.textContent = '📋 搜索结果';
   panel.classList.remove('active');
 }
 
@@ -7859,8 +7856,8 @@ document.getElementById('global-search-input').addEventListener('keypress', func
 
 // 点击面板外部关闭（可选）
 document.addEventListener('click', function(e) {
-  const panel = document.getElementById('search-results-panel');
-  const searchSection = document.querySelector('.global-search-section');
+  var panel = document.getElementById('search-results-panel');
+  var searchSection = document.querySelector('.global-search-section');
 
   if (panel.classList.contains('active') && !searchSection.contains(e.target)) {
     closeSearchResults();
@@ -7872,10 +7869,7 @@ function checkPageLoadTriggers() {
   // 注意：about.html 的消息提示现在在 about.html 页面本身显示
   // 这里不再重复触发，避免重复显示
 
-  // 1. 检查监控触发条件
-  if (chatProgress >= 18 && !monitorChatStarted) {
-    setTimeout(showMonitorToast, 3000);
-  }
+  // 监控对话不再通过 Toast 触发，改为进入 panel-chat 时自动开始
 }
 
 // 页面加载完成后执行检查
@@ -7886,7 +7880,6 @@ window.addEventListener('load', function() {
     aboutCard.addEventListener('click', function() {
       if (!aboutTriggered) {
         setAboutTriggered(true);
-        console.log('About card clicked, aboutTriggered set to true');
       }
     });
   }

@@ -92,7 +92,7 @@
       </div>
 
       <!-- 调查记录：村长 -->
-      <div class="monitor-card">
+      <div class="monitor-card" id="news-chief" style="display:none;">
         <div class="monitor-card-title">调查记录 · 村长</div>
         <div class="monitor-card-body">村长是一个关键人物。
 我们发现他非常害怕死亡，总是在等待什么。
@@ -107,7 +107,7 @@
       </div>
 
       <!-- 调查记录：阿婆 -->
-      <div class="monitor-card">
+      <div class="monitor-card" id="news-apo" style="display:none;">
         <div class="monitor-card-title">调查记录 · 阿婆</div>
         <div class="monitor-card-body">阿婆是村里最年长的老人。
 她知道很多关于云处村的古老传说。
@@ -139,5 +139,19 @@
   <footer id="intranet-footer">
     YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
   </footer>
+
+  <script>
+    (function() {
+      var unlocked = JSON.parse(localStorage.getItem('searchUnlocked') || '{}');
+      if (unlocked['chief']) {
+        var el = document.getElementById('news-chief');
+        if (el) el.style.display = '';
+      }
+      if (unlocked['apo']) {
+        var el = document.getElementById('news-apo');
+        if (el) el.style.display = '';
+      }
+    })();
+  </script>
 </body>
 </html>

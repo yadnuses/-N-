@@ -161,18 +161,12 @@
     window.addEventListener('load', function() {
       var save = getSave();
       var progress = parseInt(save.chatProgress) || 0;
-      console.log('About page loaded, save data:', save);
-      console.log('chatProgress:', save.chatProgress, 'parsed:', progress);
-
       // 检查是否需要触发消息（进度 >= 2 且未触发过）
       if (progress >= 2 && !save.aboutToastShown) {
-        console.log('Progress >= 2, will show toast in 3 seconds');
         // 标记已显示
         writeSave('aboutToastShown', true);
         // 延迟3秒后显示消息提示
         setTimeout(showMsgToast, 3000);
-      } else {
-        console.log('Progress < 2 or already shown, not showing toast');
       }
     });
   </script>

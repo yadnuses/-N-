@@ -238,24 +238,24 @@
           </div>
 
           <!-- 村民调查 -->
-          <div style="padding:10px 16px;font-size:11px;color:var(--text-dim);border-top:1px solid rgba(201,162,39,0.2);margin-top:8px;">
+          <div id="jm-villagers-header" style="padding:10px 16px;font-size:11px;color:var(--text-dim);border-top:1px solid rgba(201,162,39,0.2);margin-top:8px;display:none;">
             ▼ 村民调查
           </div>
-          <div class="journal-member" onclick="showJournal('chief')" id="jm-chief">
+          <div class="journal-member" onclick="showJournal('chief')" id="jm-chief" style="display:none;">
             <div class="jm-avatar" style="background:linear-gradient(135deg,#4a4030,#6a5040);color:#d4c4a0;">村</div>
             <div class="jm-info">
               <div class="jm-name">村长之谜</div>
               <div class="jm-date">调查记录</div>
             </div>
           </div>
-          <div class="journal-member" onclick="showJournal('apo')" id="jm-apo">
+          <div class="journal-member" onclick="showJournal('apo')" id="jm-apo" style="display:none;">
             <div class="jm-avatar" style="background:linear-gradient(135deg,#5a4050,#7a5068);color:#e0c8d0;">婆</div>
             <div class="jm-info">
               <div class="jm-name">凤英阿婆</div>
               <div class="jm-date">调查记录</div>
             </div>
           </div>
-          <div class="journal-member" onclick="showJournal('smith')" id="jm-smith">
+          <div class="journal-member" onclick="showJournal('smith')" id="jm-smith" style="display:none;">
             <div class="jm-avatar" style="background:linear-gradient(135deg,#303040,#404058);color:#a8a8c8;">匠</div>
             <div class="jm-info">
               <div class="jm-name">雷铁山</div>
@@ -350,6 +350,28 @@
         checkJournalPwd();
       }
     });
+
+    // 搜索解锁隐藏日志
+    (function() {
+      var unlocked = JSON.parse(localStorage.getItem('searchUnlocked') || '{}');
+      var hasAny = false;
+      if (unlocked['chief']) {
+        var el = document.getElementById('jm-chief');
+        if (el) { el.style.display = ''; hasAny = true; }
+      }
+      if (unlocked['apo']) {
+        var el = document.getElementById('jm-apo');
+        if (el) { el.style.display = ''; hasAny = true; }
+      }
+      if (unlocked['smith']) {
+        var el = document.getElementById('jm-smith');
+        if (el) { el.style.display = ''; hasAny = true; }
+      }
+      if (hasAny) {
+        var hd = document.getElementById('jm-villagers-header');
+        if (hd) hd.style.display = '';
+      }
+    })();
   </script>
 </body>
 </html>

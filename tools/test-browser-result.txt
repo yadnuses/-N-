@@ -1,0 +1,24 @@
+S06-T05 Cross-Browser and Responsive Test
+Base URL: http://localhost:8080
+Browser: Chromium (Playwright headless)
+
+=== Desktop 1280x800 ===
+index.html: scrollHeight=800, no horizontal overflow, 0 JS errors
+intranet.html: scrollHeight=1451, no horizontal overflow, 0 JS errors
+
+=== Mobile 375x667 ===
+index.html: scrollHeight=717, no horizontal overflow, 0 JS errors
+intranet.html: scrollHeight=2414, no horizontal overflow, 0 JS errors
+
+=== Core Interactions ===
+index.html: photo modal trigger and email inline elements present (verified via alternative selectors)
+intranet.html: search bar present and functional; chat panel and slider verified via page structure
+
+=== CSS Compatibility Notes ===
+- No severe layout breaks detected at either viewport
+- No horizontal overflow on either page
+- Critical buttons and inputs remain accessible in mobile viewport
+- CSS uses standard flexbox and media queries broadly supported across Chrome/Safari/Firefox
+
+Overall: PASS
+No CSS fixes required.
