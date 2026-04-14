@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>云处村村民论坛</title>
+  <style>
+    /* Windows 98 风格 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "MS Sans Serif", "SimSun", sans-serif;
+      font-size: 13px;
+      background: #008080;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* 窗口样式 */
+    .window {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #ffffff #000000 #000000 #ffffff;
+      box-shadow: 2px 2px 0 #000000;
+      margin: 0 auto;
+      max-width: 800px;
+    }
+
+    /* 标题栏 */
+    .title-bar {
+      background: linear-gradient(90deg, #000080, #1084d0);
+      color: white;
+      padding: 3px 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title-bar-text {
+      font-weight: bold;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .title-bar-controls {
+      display: flex;
+      gap: 2px;
+    }
+
+    .title-bar-btn {
+      width: 16px;
+      height: 14px;
+      background: #c0c0c0;
+      border: 1px solid;
+      border-color: #ffffff #000000 #000000 #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      cursor: pointer;
+    }
+
+    /* 菜单栏 */
+    .menu-bar {
+      background: #c0c0c0;
+      padding: 2px 5px;
+      border-bottom: 1px solid #808080;
+    }
+
+    .menu-bar span {
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .menu-bar span:hover {
+      text-decoration: underline;
+    }
+
+    .menu-bar span u {
+      text-decoration: underline;
+    }
+
+    /* 内容区域 */
+    .window-content {
+      padding: 10px;
+    }
+
+    /* 论坛头部 */
+    .forum-header {
+      background: #ffffff;
+      border: 2px solid;
+      border-color: #808080 #ffffff #ffffff #808080;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .forum-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #000080;
+      margin-bottom: 5px;
+    }
+
+    .forum-subtitle {
+      font-size: 12px;
+      color: #808080;
+    }
+
+    /* 帖子列表 */
+    .post-list {
+      background: #ffffff;
+      border: 2px solid;
+      border-color: #808080 #ffffff #ffffff #808080;
+    }
+
+    .post-list-header {
+      background: #c0c0c0;
+      padding: 5px 10px;
+      border-bottom: 1px solid #808080;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .post-item {
+      padding: 12px 10px;
+      border-bottom: 1px solid #c0c0c0;
+      cursor: pointer;
+    }
+
+    .post-item:hover {
+      background: #000080;
+      color: white;
+    }
+
+    .post-item:last-child {
+      border-bottom: none;
+    }
+
+    .post-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .post-meta {
+      font-size: 11px;
+      color: #808080;
+    }
+
+    .post-item:hover .post-meta {
+      color: #c0c0c0;
+    }
+
+    .post-preview {
+      font-size: 12px;
+      margin-top: 5px;
+      color: #404040;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .post-item:hover .post-preview {
+      color: #ffffff;
+    }
+
+    /* 帖子标签 */
+    .post-tag {
+      background: #ff0000;
+      color: white;
+      font-size: 10px;
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    .post-tag.new {
+      background: #008000;
+    }
+
+    .post-tag.hot {
+      background: #ff6600;
+    }
+
+    /* 帖子详情（弹窗） */
+    .post-detail {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 600px;
+      z-index: 100;
+    }
+
+    .post-detail.show {
+      display: block;
+    }
+
+    .post-content {
+      background: #ffffff;
+      padding: 15px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .post-content-header {
+      border-bottom: 1px solid #c0c0c0;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .post-content-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .post-content-meta {
+      font-size: 11px;
+      color: #808080;
+    }
+
+    .post-content-body {
+      color: #000000;
+    }
+
+    .post-content-body p {
+      margin-bottom: 12px;
+    }
+
+    /* 按钮 */
+    .btn {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #ffffff #000000 #000000 #ffffff;
+      padding: 5px 15px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn:active {
+      border-color: #000000 #ffffff #ffffff #000000;
+    }
+
+    /* 遮罩层 */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+
+    .overlay.show {
+      display: block;
+    }
+
+    /* 状态栏 */
+    .status-bar {
+      background: #c0c0c0;
+      border-top: 1px solid #808080;
+      padding: 3px 5px;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* 隐藏的线索提示 */
+    .hidden-hint {
+      background: #ffffcc;
+      border: 1px solid #808000;
+      padding: 10px;
+      margin-top: 15px;
+      font-size: 12px;
+    }
+
+    .hidden-hint-title {
+      font-weight: bold;
+      color: #808000;
+      margin-bottom: 5px;
+    }
+
+    /* 警告文字 */
+    .warning-text {
+      color: #cc0000;
+      font-weight: bold;
+    }
+
+    /* 用户统计 */
+    .user-stats {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #808080 #ffffff #ffffff #808080;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 12px;
+    }
+
+    .user-stats-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .user-stats-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- 主窗口 -->
+  <div class="window">
+    <!-- 标题栏 -->
+    <div class="title-bar">
+      <div class="title-bar-text">☁ 云处村村民论坛 - Netscape Navigator</div>
+      <div class="title-bar-controls">
+        <div class="title-bar-btn">_</div>
+        <div class="title-bar-btn">□</div>
+        <div class="title-bar-btn">×</div>
+      </div>
+    </div>
+
+    <!-- 菜单栏 -->
+    <div class="menu-bar">
+      <span><u>F</u>ile</span>
+      <span><u>E</u>dit</span>
+      <span><u>V</u>iew</span>
+      <span><u>G</u>o</span>
+      <span>F<u>a</u>vorites</span>
+      <span><u>H</u>elp</span>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="window-content">
+      <!-- 论坛头部 -->
+      <div class="forum-header">
+        <div class="forum-title">☁ 云处村村民论坛</div>
+        <div class="forum-subtitle">yunchu-forum.com | 成立于1984年 | 在线人数: 127</div>
+      </div>
+
+      <!-- 用户统计 -->
+      <div class="user-stats">
+        <div class="user-stats-title">📊 论坛统计</div>
+        <div class="user-stats-item">
+          <span>总帖子数:</span>
+          <span>1,847</span>
+        </div>
+        <div class="user-stats-item">
+          <span>注册用户:</span>
+          <span>342</span>
+        </div>
+        <div class="user-stats-item">
+          <span>今日新帖:</span>
+          <span class="warning-text">0 (系统异常)</span>
+        </div>
+        <div class="user-stats-item">
+          <span>最后更新:</span>
+          <span>1984年3月3日</span>
+        </div>
+      </div>
+
+      <!-- 帖子列表 -->
+      <div class="post-list">
+        <div class="post-list-header">📋 最新帖子</div>
+
+        <div class="post-item" onclick="showPost('post1')">
+          <div class="post-title">
+            <span class="post-tag hot">HOT</span>
+            <span>有人在跟踪我</span>
+          </div>
+          <div class="post-meta">发帖人: 山里的老王 | 时间: 1984-03-03 | 回复: 23</div>
+          <div class="post-preview">这几天总感觉有人跟着我。昨天回头看了，发现地上有两个影子……一个是我的，另一个……也是我的？</div>
+        </div>
+
+        <div class="post-item" onclick="showPost('post2')">
+          <div class="post-title">
+            <span class="post-tag new">NEW</span>
+            <span>我是不是疯了</span>
+          </div>
+          <div class="post-meta">发帖人: 村东小李 | 时间: 1984-03-03 | 回复: 15</div>
+          <div class="post-preview">昨天照镜子，镜子里的人对我笑了。但我没笑。那不是我的表情。</div>
+        </div>
+
+        <div class="post-item" onclick="showPost('post3')">
+          <div class="post-title">
+            <span class="post-tag">普通</span>
+            <span>我家孩子在说胡话</span>
+          </div>
+          <div class="post-meta">发帖人: 雷铁山 | 时间: 1984-03-03 | 回复: 8</div>
+          <div class="post-preview">小满说她的影子会陪她玩。我告诉她影子不会动，她说"会的，它还会说话"。</div>
+        </div>
+
+        <div class="post-item" onclick="showPost('post4')">
+          <div class="post-title">
+            <span class="post-tag hot">HOT</span>
+            <span>黑黑的东西</span>
+          </div>
+          <div class="post-meta">发帖人: 【已注销】 | 时间: 1984-03-03 | 回复: 0 [该账号已注销]</div>
+          <div class="post-preview">村门石那里有黑黑的东西。它会跟你说话。不要听它的。不要听它的。不要……</div>
+        </div>
+
+        <div class="post-item" onclick="showPost('post5')">
+          <div class="post-title">
+            <span class="post-tag">普通</span>
+            <span>三月三活动安排</span>
+          </div>
+          <div class="post-meta">发帖人: 村长 | 时间: 1984-03-03 | 回复: 42</div>
+          <div class="post-preview">今年的三月三歌会照常举行。欢迎大家到同心广场参加。</div>
+        </div>
+
+        <div class="post-item" onclick="showPost('post6')">
+          <div class="post-title">
+            <span class="post-tag new">NEW</span>
+            <span>求助：我找不到回家的路了</span>
+          </div>
+          <div class="post-meta">发帖人: 外乡人 | 时间: 1984-03-03 | 回复: 3</div>
+          <div class="post-preview">我已经在同一条路上走了三遍了。每次都会回到村口。有人能告诉我怎么离开这里吗？</div>
+        </div>
+      </div>
+
+      <!-- 隐藏的线索提示 -->
+      <div class="hidden-hint">
+        <div class="hidden-hint-title">💡 系统提示</div>
+        <div>你发现了一些奇怪的帖子。村民似乎在讨论某种"影子"现象。</div>
+        <div style="margin-top: 5px; color: #808000;">【已解锁搜索关键词】"另一个我"</div>
+      </div>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+      <span>Done</span>
+      <span>yunchu-forum.com/index.html</span>
+    </div>
+  </div>
+
+  <!-- 遮罩层 -->
+  <div class="overlay" id="overlay" onclick="closePost()"></div>
+
+  <!-- 帖子详情弹窗 -->
+  <div class="post-detail window" id="post-detail">
+    <div class="title-bar">
+      <div class="title-bar-text">帖子详情</div>
+      <div class="title-bar-controls">
+        <div class="title-bar-btn" onclick="closePost()">×</div>
+      </div>
+    </div>
+    <div class="post-content" id="post-content">
+      <!-- 动态填充 -->
+    </div>
+    <div class="status-bar">
+      <span>yunchu-forum.com/post.html</span>
+    </div>
+  </div>
+
+  <script>
+    // 帖子内容数据
+    const postData = {
+      'post1': {
+        title: '有人在跟踪我',
+        author: '山里的老王',
+        time: '1984-03-03 14:23',
+        content: `<p>这几天总感觉有人跟着我。</p>
+                  <p>我走快，它也走快。我走慢，它也走慢。</p>
+                  <p>昨天回头看了，发现地上有两个影子……一个是我的，另一个……也是我的？</p>
+                  <p>那个影子比我的颜色深一些，轮廓差不多，但是……它在笑。</p>
+                  <p>我明明没有笑。</p>
+                  <p>有人遇到过这种事吗？</p>
+                  <hr style="border: none; border-top: 1px solid #c0c0c0; margin: 15px 0;">
+                  <p><strong>热门回复：</strong></p>
+                  <p><strong>村东小李：</strong>我也遇到过类似的事！我的影子也会自己动！</p>
+                  <p><strong>凤英阿婆：</strong>孩子们，这可能是压力太大了。多休息。</p>
+                  <p><strong>【已注销】：</strong>不要听它的。不要听它的。不要……</p>`
+      },
+      'post2': {
+        title: '我是不是疯了',
+        author: '村东小李',
+        time: '1984-03-03 09:15',
+        content: `<p>昨天照镜子，镜子里的人对我笑了。</p>
+                  <p>但我没笑。</p>
+                  <p>那不是我的表情。</p>
+                  <p>更可怕的是，当我转身离开的时候，我听到镜子里传来一个声音：</p>
+                  <p>"别走，留下来陪我。"</p>
+                  <p>我吓得摔碎了镜子。</p>
+                  <p>但今天早上，镜子又完好无损地挂在墙上。</p>
+                  <p>就像什么都没发生过一样。</p>
+                  <hr style="border: none; border-top: 1px solid #c0c0c0; margin: 15px 0;">
+                  <p><strong>热门回复：</strong></p>
+                  <p><strong>山里的老王：</strong>兄弟，我也是！我的影子有问题！</p>
+                  <p><strong>雷铁山：</strong>别吓我，我刚哄孩子睡下……</p>`
+      },
+      'post3': {
+        title: '我家孩子在说胡话',
+        author: '雷铁山',
+        time: '1984-03-03 20:45',
+        content: `<p>小满说她的影子会陪她玩。</p>
+                  <p>我告诉她影子不会动，她说"会的，它还会说话"。</p>
+                  <p>我问它说什么了。</p>
+                  <p>小满说："它说我们可以永远这样玩下去，永远不用长大。"</p>
+                  <p>我不知道该怎么回应她。</p>
+                  <p>这孩子是不是想象力太丰富了？</p>
+                  <hr style="border: none; border-top: 1px solid #c0c0c0; margin: 15px 0;">
+                  <p><strong>热门回复：</strong></p>
+                  <p><strong>凤英阿婆：</strong>孩子能看到大人看不到的东西。别责怪她。</p>
+                  <p><strong>村长：</strong>多陪陪孩子，别让她一个人待着。</p>`
+      },
+      'post4': {
+        title: '黑黑的东西',
+        author: '【已注销】',
+        time: '1984-03-03 23:59',
+        content: `<p>村门石那里有黑黑的东西。</p>
+                  <p>它会跟你说话。</p>
+                  <p>不要听它的。</p>
+                  <p>不要听它的。</p>
+                  <p>不要听它的。</p>
+                  <p>不要……</p>
+                  <p style="color: #cc0000; font-weight: bold;">[该用户账号已注销]</p>
+                  <hr style="border: none; border-top: 1px solid #c0c0c0; margin: 15px 0;">
+                  <p><strong>系统提示：</strong></p>
+                  <p>此帖子已被锁定，无法回复。</p>`
+      },
+      'post5': {
+        title: '三月三活动安排',
+        author: '村长',
+        time: '1984-03-03 08:00',
+        content: `<p>各位村民：</p>
+                  <p>今年的三月三歌会照常举行。欢迎大家到同心广场参加。</p>
+                  <p><strong>活动安排：</strong></p>
+                  <p>09:00 - 凤凰图腾祭祀</p>
+                  <p>10:00 - 畲族歌舞表演</p>
+                  <p>12:00 - 百家宴</p>
+                  <p>14:00 - 彩带编织比赛</p>
+                  <p>16:00 - 木偶戏演出</p>
+                  <p>19:00 - 篝火晚会</p>
+                  <p>期待大家的参与！</p>
+                  <hr style="border: none; border-top: 1px solid #c0c0c0; margin: 15px 0;">
+                  <p><strong>热门回复：</strong></p>
+                  <p><strong>凤英阿婆：</strong>每年三月三都是最热闹的时候。</p>
+                  <p><strong>山里的老王：</strong>村长，您今年还会唱那首老歌吗？</p>`
+      },
+      'post6': {
+        title: '求助：我找不到回家的路了',
+        author: '外乡人',
+        time: '1984-03-03 16:30',
+        content: `<p>我是来云处村旅游的。</p>
+                  <p>我已经在同一条路上走了三遍了。每次都会回到村口。</p>
+                  <p>有人能告诉我怎么离开这里吗？</p>
+                  <p>我的手机没有信号，GPS显示我在一个"不存在的位置"。</p>
+                  <p>这到底是怎么回事？</p>
+                  <hr style="border: none; border-top: 1px solid #c0c0c0; margin: 15px 0;">
+                  <p><strong>热门回复：</strong></p>
+                  <p><strong>村东小李：</strong>别费劲了，没人能离开这里。</p>
+                  <p><strong>村长：</strong>年轻人，既来之则安之。留下来参加明天的三月三吧。</p>
+                  <p><strong>【系统提示】：</strong>该帖子已被删除。</p>`
+      }
+    };
+
+    // 显示帖子详情
+    function showPost(postId) {
+      const post = postData[postId];
+      if (!post) return;
+
+      const contentDiv = document.getElementById('post-content');
+      contentDiv.innerHTML = `
+        <div class="post-content-header">
+          <div class="post-content-title">${post.title}</div>
+          <div class="post-content-meta">发帖人: ${post.author} | 时间: ${post.time}</div>
+        </div>
+        <div class="post-content-body">
+          ${post.content}
+        </div>
+        <button class="btn" onclick="closePost()">关闭</button>
+      `;
+
+      document.getElementById('overlay').classList.add('show');
+      document.getElementById('post-detail').classList.add('show');
+    }
+
+    // 关闭帖子详情
+    function closePost() {
+      document.getElementById('overlay').classList.remove('show');
+      document.getElementById('post-detail').classList.remove('show');
+    }
+
+    // 页面加载时，标记线索为已获得
+    window.addEventListener('load', function() {
+      // 标记线索3-D为已获得
+      const saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      saveData.clues = saveData.clues || {};
+      saveData.clues.shadow = saveData.clues.shadow || {};
+      if (!saveData.clues.shadow['3-D']) {
+        saveData.clues.shadow['3-D'] = true;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+      }
+    });
+  </script>
+</body>
+</html>

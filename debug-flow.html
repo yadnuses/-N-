@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>调试流程</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #1a1a1a;
+      color: #5db870;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 { color: #c9a227; }
+    .step {
+      background: #0a0a0a;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 10px 0;
+      border-left: 4px solid #c9a227;
+    }
+    .step.active { border-left-color: #5db870; }
+    .step.done { border-left-color: #888; opacity: 0.6; }
+    button {
+      background: #c9a227;
+      color: #1a1a1a;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    .warning {
+      color: #e74c3c;
+      background: rgba(231, 76, 60, 0.1);
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 调试流程</h1>
+
+  <div class="step" id="step0">
+    <strong>第0步：检查存档</strong><br>
+    <span id="step0-status">检查中...</span><br>
+    <button onclick="checkSave()">刷新检查</button>
+  </div>
+
+  <div class="step" id="step1">
+    <strong>第1步：主页开始聊天</strong><br>
+    你需要在主页 <a href="intranet.html" style="color:#c9a227">intranet.html</a> 点击消息提示或聊天记录开始对话。<br>
+    这会将 chatProgress 设置为 1。<br>
+    <span id="step1-status"></span>
+  </div>
+
+  <div class="step" id="step2">
+    <strong>第2步：选择回复</strong><br>
+    在聊天中选择任意回复选项，chatProgress 会变成 2。<br>
+    <span id="step2-status"></span>
+  </div>
+
+  <div class="step" id="step3">
+    <strong>第3步：访问 about.html</strong><br>
+    此时访问 <a href="about.html" style="color:#c9a227">about.html</a> 应该能看到消息提示。<br>
+    <span id="step3-status"></span>
+  </div>
+
+  <div class="warning" id="warning"></div>
+
+  <h2>快捷操作</h2>
+  <button onclick="setProgress(0)">重置进度为0</button>
+  <button onclick="setProgress(1)">设置进度为1</button>
+  <button onclick="setProgress(2)">设置进度为2</button>
+  <button onclick="setProgress(5)">设置进度为5</button>
+  <button onclick="clearSave()">清除存档</button>
+
+  <script>
+    function loadSave() {
+      try {
+        return JSON.parse(localStorage.getItem('yunchu_save')) || {};
+      } catch(e) { return {}; }
+    }
+
+    function checkSave() {
+      var save = loadSave();
+      var progress = parseInt(save.chatProgress) || 0;
+
+      // 更新步骤状态
+      document.getElementById('step0-status').innerHTML =
+        'chatProgress: ' + progress + '<br>' +
+        'aboutTriggered: ' + (save.aboutTriggered || false) + '<br>' +
+        'aboutToastShown: ' + (save.aboutToastShown || false);
+
+      // 步骤1状态
+      if (progress >= 1) {
+        document.getElementById('step1').className = 'step done';
+        document.getElementById('step1-status').textContent = '✓ 已完成';
+      } else {
+        document.getElementById('step1').className = 'step active';
+        document.getElementById('step1-status').textContent = '⚠ 需要在主页开始聊天';
+      }
+
+      // 步骤2状态
+      if (progress >= 2) {
+        document.getElementById('step2').className = 'step done';
+        document.getElementById('step2-status').textContent = '✓ 已完成';
+      } else if (progress >= 1) {
+        document.getElementById('step2').className = 'step active';
+        document.getElementById('step2-status').textContent = '⚠ 需要选择回复选项';
+      } else {
+        document.getElementById('step2-status').textContent = '';
+      }
+
+      // 步骤3状态
+      if (progress >= 2) {
+        document.getElementById('step3').className = 'step active';
+        document.getElementById('step3-status').innerHTML =
+          '✓ 条件满足！<a href="about.html" style="color:#5db870">点击访问 about.html</a>';
+      } else {
+        document.getElementById('step3-status').textContent = '';
+      }
+
+      // 警告
+      var warning = document.getElementById('warning');
+      if (progress < 2) {
+        warning.textContent = '⚠️ 进度不足！你需要先在主页开始聊天，使 chatProgress >= 2';
+      } else {
+        warning.textContent = '';
+      }
+    }
+
+    function setProgress(n) {
+      var save = loadSave();
+      save.chatProgress = n;
+      localStorage.setItem('yunchu_save', JSON.stringify(save));
+      checkSave();
+    }
+
+    function clearSave() {
+      localStorage.removeItem('yunchu_save');
+      checkSave();
+    }
+
+    checkSave();
+    setInterval(checkSave, 1000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>清除进度 - 第N个观测者</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #1a3d28 0%, #0f1f14 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f0e6d0;
+    }
+
+    .container {
+      background: rgba(26, 61, 40, 0.8);
+      border: 1px solid rgba(201, 162, 39, 0.3);
+      border-radius: 8px;
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #c9a227;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .warning-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .description {
+      font-size: 14px;
+      line-height: 1.8;
+      color: rgba(240, 230, 208, 0.8);
+      margin-bottom: 30px;
+    }
+
+    .save-info {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 30px;
+      text-align: left;
+      font-family: monospace;
+      font-size: 12px;
+      color: #5db870;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .save-info.empty {
+      color: #e74c3c;
+      text-align: center;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .btn-clear {
+      background: linear-gradient(135deg, rgba(192, 57, 43, 0.8), rgba(150, 40, 30, 0.9));
+      color: #fff;
+      border: 1px solid rgba(231, 76, 60, 0.5);
+    }
+
+    .btn-clear:hover {
+      background: linear-gradient(135deg, rgba(231, 76, 60, 0.9), rgba(192, 57, 43, 1));
+      box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+    }
+
+    .btn-back {
+      background: linear-gradient(135deg, rgba(26, 61, 40, 0.8), rgba(15, 31, 20, 0.9));
+      color: #c9a227;
+      border: 1px solid rgba(201, 162, 39, 0.5);
+    }
+
+    .btn-back:hover {
+      background: linear-gradient(135deg, rgba(26, 61, 40, 0.9), rgba(15, 31, 20, 1));
+      box-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
+    }
+
+    .success-message {
+      display: none;
+      background: rgba(93, 184, 112, 0.15);
+      border: 1px solid rgba(93, 184, 112, 0.3);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 20px;
+      color: #5db870;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: rgba(240, 230, 208, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="warning-icon">⚠️</div>
+    <h1>清除游戏进度</h1>
+
+    <div class="description">
+      这将清除所有存档数据，包括：<br>
+      • 已收集的线索<br>
+      • 已完成的谜题<br>
+      • 搜索历史记录<br>
+      • 剧情进度
+    </div>
+
+    <div class="success-message" id="success-msg">
+      ✅ 进度已清除！<br>
+      刷新页面可以重新开始游戏。
+    </div>
+
+    <div class="save-info" id="save-info">
+      正在读取存档...
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-clear" onclick="clearSave()">清除进度</button>
+      <button class="btn-back" onclick="location.href='intranet.html'">返回内网</button>
+    </div>
+
+    <div class="footer">
+      YUNCHU OBSERVER PROJECT
+    </div>
+  </div>
+
+  <script>
+    // 读取并显示当前存档
+    function loadSaveInfo() {
+      const saveInfoEl = document.getElementById('save-info');
+      const saveData = localStorage.getItem('yunchu_save');
+
+      if (!saveData) {
+        saveInfoEl.innerHTML = '<div class="empty">暂无存档数据</div>';
+        return;
+      }
+
+      try {
+        const data = JSON.parse(saveData);
+        let html = '<strong>当前存档内容：</strong><br><br>';
+
+        // 显示线索收集情况
+        if (data.clues) {
+          html += '<strong>线索收集：</strong><br>';
+          for (const [puzzle, clues] of Object.entries(data.clues)) {
+            const clueList = Object.entries(clues)
+              .filter(([k, v]) => v === true)
+              .map(([k, v]) => k);
+            if (clueList.length > 0) {
+              html += `  ${puzzle}: ${clueList.join(', ')}<br>`;
+            }
+          }
+          html += '<br>';
+        }
+
+        // 显示已完成的谜题
+        if (data.puzzlesSolved) {
+          const solved = Object.entries(data.puzzlesSolved)
+            .filter(([k, v]) => v === true)
+            .map(([k, v]) => k);
+          if (solved.length > 0) {
+            html += `<strong>已完成谜题：</strong> ${solved.join(', ')}<br><br>`;
+          }
+        }
+
+        // 显示其他数据
+        html += '<strong>原始数据：</strong><br>';
+        html += JSON.stringify(data, null, 2);
+
+        saveInfoEl.innerHTML = html;
+      } catch (e) {
+        saveInfoEl.innerHTML = '<div class="empty">存档数据损坏</div>';
+      }
+    }
+
+    // 清除存档
+    function clearSave() {
+      if (confirm('确定要清除所有进度吗？此操作不可恢复！')) {
+        localStorage.removeItem('yunchu_save');
+        document.getElementById('success-msg').classList.add('show');
+        loadSaveInfo();
+      }
+    }
+
+    // 页面加载时显示存档信息
+    loadSaveInfo();
+  </script>
+</body>
+</html>

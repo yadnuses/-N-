@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>循环的起源 - 调查中心 - 耘雀内网</title>
+  <link rel="stylesheet" href="css/intranet-pages.css">
+  <style>
+    /* 谜题页面专用样式 */
+    .puzzle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(201,162,39,0.2);
+    }
+
+    .puzzle-header h1 {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--accent2);
+      letter-spacing: 2px;
+    }
+
+    .puzzle-nav {
+      display: flex;
+      gap: 12px;
+    }
+
+    .puzzle-nav a {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 13px;
+      transition: all 0.25s;
+    }
+
+    .puzzle-nav a:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+    }
+
+    .puzzle-goal {
+      background: linear-gradient(135deg, rgba(201,162,39,0.1) 0%, rgba(15,31,20,0.3) 100%);
+      border: 1px solid rgba(201,162,39,0.25);
+      border-left: 4px solid var(--accent);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+
+    .puzzle-goal-title {
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .puzzle-goal-content {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .clues-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      color: var(--accent2);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201,162,39,0.15);
+    }
+
+    .clue-item {
+      background: linear-gradient(135deg, rgba(26,61,40,0.25) 0%, rgba(15,31,20,0.4) 100%);
+      border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    .clue-item:hover {
+      border-color: rgba(201,162,39,0.3);
+    }
+
+    .clue-item.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .clue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .clue-id {
+      font-size: 12px;
+      color: var(--accent);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    .clue-status {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .clue-status.unlocked {
+      background: rgba(93,184,112,0.15);
+      color: #5db870;
+      border: 1px solid rgba(93,184,112,0.3);
+    }
+
+    .clue-status.locked {
+      background: rgba(240,230,208,0.08);
+      color: var(--text-mute);
+      border: 1px solid rgba(240,230,208,0.15);
+    }
+
+    .clue-name {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .clue-source {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      margin-bottom: 12px;
+    }
+
+    .clue-content {
+      font-size: 14px;
+      color: rgba(240,230,208,0.85);
+      line-height: 1.8;
+      padding: 16px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 2px;
+    }
+
+    .clue-unlock-hint {
+      font-size: 12px;
+      color: var(--accent);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* 验证关卡 */
+    .validation-section {
+      background: linear-gradient(135deg, rgba(26,61,40,0.4) 0%, rgba(15,31,20,0.5) 100%);
+      border: 2px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 28px;
+    }
+
+    .validation-section.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .validation-title {
+      font-size: 18px;
+      color: var(--accent2);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+    }
+
+    .clue-review {
+      background: rgba(0,0,0,0.2);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .clue-review-title {
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .clue-review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .clue-review-item {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 8px 12px;
+      background: rgba(201,162,39,0.08);
+      border-radius: 2px;
+      border-left: 2px solid var(--accent);
+    }
+
+    .clue-review-item.missing {
+      opacity: 0.5;
+      border-left-color: var(--text-mute);
+    }
+
+    .validation-question {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .validation-question-number {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .validation-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .validation-option {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .validation-option:hover {
+      border-color: rgba(201,162,39,0.5);
+      background: rgba(201,162,39,0.05);
+    }
+
+    .validation-option input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+
+    .validation-option label {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .validation-submit-btn {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .validation-submit-btn:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+      box-shadow: 0 0 16px rgba(201,162,39,0.2);
+    }
+
+    .validation-feedback {
+      text-align: center;
+      padding: 16px;
+      border-radius: 4px;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .validation-feedback.success {
+      background: rgba(93,184,112,0.15);
+      border: 1px solid rgba(93,184,112,0.3);
+      color: #5db870;
+    }
+
+    .validation-feedback.error {
+      background: rgba(192,57,43,0.15);
+      border: 1px solid rgba(192,57,43,0.3);
+      color: #e74c3c;
+    }
+
+    .solved-banner {
+      background: linear-gradient(135deg, rgba(93,184,112,0.2) 0%, rgba(58,122,82,0.3) 100%);
+      border: 2px solid rgba(93,184,112,0.4);
+      border-radius: 4px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .solved-banner h3 {
+      font-size: 20px;
+      color: #5db870;
+      margin-bottom: 12px;
+    }
+
+    .solved-banner p {
+      font-size: 14px;
+      color: rgba(240,230,208,0.8);
+      line-height: 1.8;
+    }
+
+    .final-ending-btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, rgba(93,184,112,0.3), rgba(58,122,82,0.4));
+      border: 1px solid #5db870;
+      border-radius: 2px;
+      color: #5db870;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .final-ending-btn:hover {
+      background: linear-gradient(135deg, rgba(93,184,112,0.4), rgba(58,122,82,0.5));
+      box-shadow: 0 0 16px rgba(93,184,112,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header id="intranet-header">
+    <div class="logo-wrap">
+      <img src="images/yunque-logo.png" alt="耘雀">
+      <span class="logo-name">耘雀内网</span>
+    </div>
+    <nav class="intranet-nav">
+      <a href="intranet.html" class="nav-link">首页</a>
+      <a href="about.html" class="nav-link">关于我们</a>
+      <a href="overview.html" class="nav-link">村庄概况</a>
+      <a href="map.html" class="nav-link">村庄地图</a>
+      <a href="news.html" class="nav-link">村庄动态</a>
+      <a href="logs.html" class="nav-link">工作日志</a>
+      <a href="investigation.html" class="nav-link active">调查中心</a>
+    </nav>
+    <div class="header-badge">
+      <span class="online-dot"></span>
+      NO.000 · 已连接
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main id="intranet-main">
+    <div class="puzzle-header">
+      <h1>🔄 循环的起源</h1>
+      <div class="puzzle-nav">
+        <a href="investigation.html">← 返回调查中心</a>
+      </div>
+    </div>
+
+    <!-- 已解决横幅（初始隐藏） -->
+    <div class="solved-banner" id="solved-banner" style="display: none;">
+      <h3>✓ 最终验证通过</h3>
+      <p>你找到了打破循环的方法。<br>现在，是时候做出选择了。</p>
+      <button class="final-ending-btn" onclick="location.href='epilogue.html'">进入云处村</button>
+    </div>
+
+    <!-- 谜题目标 -->
+    <div class="puzzle-goal">
+      <div class="puzzle-goal-title">▌ 谜题目标</div>
+      <div class="puzzle-goal-content">
+        找出时间循环的根源，理解打破循环的方法。
+      </div>
+    </div>
+
+    <!-- 线索列表 -->
+    <div class="clues-section">
+      <div class="section-title">已收集线索</div>
+
+      <!-- 线索 5-A -->
+      <div class="clue-item locked" id="clue-5a">
+        <div class="clue-header">
+          <span class="clue-id">线索 5-A</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">时间场形成记录</div>
+        <div class="clue-source">来源：研究中心数据库</div>
+        <div class="clue-content" style="display: none;">
+          <strong>时间场异常形成报告</strong><br><br>
+          记录时间：1984年3月3日<br><br>
+          <strong>事件经过：</strong><br>
+          当日，云处村发生了一起意外事故。村长的孩子（9岁）在村口玩耍时遭遇意外，生命垂危。<br><br>
+          在那一刻，村庄上空出现了强烈的时间波动。<br><br>
+          随后，时间开始重置。那一天被无限重复。<br><br>
+          <strong>分析结论：</strong><br>
+          孩子的强烈愿望——"希望这一切没有发生"——触发了时间场的自我保护机制。<br><br>
+          时间场将孩子最痛苦的那一刻隔离，创造了一个永恒的"安全区"。<br><br>
+          这就是<strong>时间循环的起源</strong>。
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"时间场"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 5-B -->
+      <div class="clue-item locked" id="clue-5b">
+        <div class="clue-header">
+          <span class="clue-id">线索 5-B</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">第一次循环档案</div>
+        <div class="clue-source">来源：凤英阿婆口述历史</div>
+        <div class="clue-content" style="display: none;">
+          <strong>【口述历史】云处村的那场灾难</strong><br><br>
+          凤英阿婆（时年35岁）回忆：<br><br>
+          "那天是三月三，孩子们都在村口玩耍。突然，传来一声巨响……"<br><br>
+          "村长的孩子……那孩子……"<br><br>
+          "我们都以为他死了。但第二天，他又活蹦乱跳地出现在村口，就像什么都没发生一样。"<br><br>
+          "从那以后，每年的三月三，我们都会重复那一天。"<br><br>
+          "一开始，村民们都很害怕。但渐渐地，我们发现这是一件好事——我们永远不会衰老，永远不会死亡。"<br><br>
+          "只是那个孩子……他好像什么都不记得了。每次循环，他都会重新经历那一天的恐惧。"<br><br>
+          "我想，这就是为什么时间一直困在那一天——<strong>因为他还没有准备好面对真相。</strong>"
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"第一次循环"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 5-C -->
+      <div class="clue-item locked" id="clue-5c">
+        <div class="clue-header">
+          <span class="clue-id">线索 5-C</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">小坏蛋的过去</div>
+        <div class="clue-source">来源：潘安森终极笔记</div>
+        <div class="clue-content" style="display: none;">
+          <strong>【绝密】真相</strong><br><br>
+          经过无数循环的观察，我终于明白了。<br><br>
+          小坏蛋，就是村长的孩子。<br><br>
+          1984年3月3日，他在村口遭遇了那场意外。在濒死的瞬间，他的强烈愿望创造了这个时间循环。<br><br>
+          但他本人并不知道这一切。<br><br>
+          每次循环，他的记忆都会被重置。他永远活在三月三的前一天——那个无忧无虑的、充满期待的早晨。<br><br>
+          而他的<strong>影子</strong>，则承载着那一天的记忆——那一天的恐惧、痛苦、和对生命的渴望。<br><br>
+          影子在保护他，让他永远不用面对真相。<br><br>
+          但要打破循环，<strong>我们必须让他面对真相</strong>。<br><br>
+          这不是残忍，这是救赎。
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"小坏蛋 过去"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 5-D -->
+      <div class="clue-item locked" id="clue-5d">
+        <div class="clue-header">
+          <span class="clue-id">线索 5-D</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">打破循环的方法</div>
+        <div class="clue-source">来源：综合分析</div>
+        <div class="clue-content" style="display: none;">
+          <strong>【结论】打破循环的条件</strong><br><br>
+          基于所有线索的综合分析，打破时间循环需要满足以下条件：<br><br>
+          <strong>1. 时间锚点必须自愿放弃循环</strong><br>
+          强制打破会导致时间场崩溃，所有被困的灵魂都会消散。<br><br>
+          <strong>2. 需要面对被封锁的记忆</strong><br>
+          小坏蛋必须记起1984年3月3日发生的一切，接受那个真相。<br><br>
+          <strong>3. 需要外界的支持</strong><br>
+          一个人的力量不足以面对这种创伤。需要有人陪伴他，告诉他：即使时间重新开始流动，他也不会孤单。<br><br>
+          <strong>4. 需要完成心愿</strong><br>
+          在最初的循环中，小坏蛋有一个未完成的愿望。完成它，可以帮助他释怀。<br><br>
+          <strong>关键：</strong>进入云处村，找到小坏蛋，让他愿意醒来。
+        </div>
+        <div class="clue-unlock-hint">
+          💡 收集完线索5-A、5-B、5-C后自动解锁
+        </div>
+      </div>
+    </div>
+
+    <!-- 验证关卡 -->
+    <div class="validation-section locked" id="validation-section">
+      <div class="validation-title">📋 最终验证</div>
+
+      <div class="clue-review">
+        <div class="clue-review-title">【线索回顾】</div>
+        <div class="clue-review-list" id="clue-review-list">
+          <div class="clue-review-item missing" id="review-5a">线索5-A：时间循环是小坏蛋濒死时的强烈愿望创造的</div>
+          <div class="clue-review-item missing" id="review-5b">线索5-B：小坏蛋每次循环都会重新经历那一天的恐惧</div>
+          <div class="clue-review-item missing" id="review-5c">线索5-C：小坏蛋就是村长的孩子，影子承载着那一天的记忆</div>
+          <div class="clue-review-item missing" id="review-5d">线索5-D：打破循环需要让小坏蛋自愿放弃，面对被封锁的记忆</div>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        <span class="validation-question-number">1.</span> 时间循环的根源是：
+      </div>
+      <div class="validation-options" id="q1-options">
+        <div class="validation-option" onclick="selectOption('q1', 'A')">
+          <input type="radio" name="q1" value="A" id="q1-A">
+          <label for="q1-A">A. 外星的科技实验</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q1', 'B')">
+          <input type="radio" name="q1" value="B" id="q1-B">
+          <label for="q1-B">B. 小坏蛋濒死时的强烈愿望</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q1', 'C')">
+          <input type="radio" name="q1" value="C" id="q1-C">
+          <label for="q1-C">C. 凤凰神的诅咒</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q1', 'D')">
+          <input type="radio" name="q1" value="D" id="q1-D">
+          <label for="q1-D">D. 自然的时间异常</label>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        <span class="validation-question-number">2.</span> 小坏蛋的真实身份是：
+      </div>
+      <div class="validation-options" id="q2-options">
+        <div class="validation-option" onclick="selectOption('q2', 'A')">
+          <input type="radio" name="q2" value="A" id="q2-A">
+          <label for="q2-A">A. 普通村民的孩子</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q2', 'B')">
+          <input type="radio" name="q2" value="B" id="q2-B">
+          <label for="q2-B">B. 村长的孩子，在1984年遭遇意外</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q2', 'C')">
+          <input type="radio" name="q2" value="C" id="q2-C">
+          <label for="q2-C">C. 外来者</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q2', 'D')">
+          <input type="radio" name="q2" value="D" id="q2-D">
+          <label for="q2-D">D. 凤凰神的化身</label>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        <span class="validation-question-number">3.</span> 打破循环的关键是：
+      </div>
+      <div class="validation-options" id="q3-options">
+        <div class="validation-option" onclick="selectOption('q3', 'A')">
+          <input type="radio" name="q3" value="A" id="q3-A">
+          <label for="q3-A">A. 消灭小坏蛋</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q3', 'B')">
+          <input type="radio" name="q3" value="B" id="q3-B">
+          <label for="q3-B">B. 摧毁佛儿岩</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q3', 'C')">
+          <input type="radio" name="q3" value="C" id="q3-C">
+          <label for="q3-C">C. 让小坏蛋自愿面对真相，放弃循环</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q3', 'D')">
+          <input type="radio" name="q3" value="D" id="q3-D">
+          <label for="q3-D">D. 等待第100次循环自动结束</label>
+        </div>
+      </div>
+
+      <button class="validation-submit-btn" onclick="submitAnswer()">提交最终答案</button>
+
+      <div id="validation-feedback"></div>
+    </div>
+  </main>
+
+  <footer id="intranet-footer">
+    YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
+  </footer>
+
+  <script>
+    // 线索数据
+    var clueData = {
+      '5-A': {
+        name: '时间场形成记录',
+        content: '时间循环是小坏蛋濒死时的强烈愿望创造的',
+        unlocked: false,
+        unlockKeyword: '时间场'
+      },
+      '5-B': {
+        name: '第一次循环档案',
+        content: '小坏蛋每次循环都会重新经历那一天的恐惧',
+        unlocked: false,
+        unlockKeyword: '第一次循环'
+      },
+      '5-C': {
+        name: '小坏蛋的过去',
+        content: '小坏蛋就是村长的孩子，影子承载着那一天的记忆',
+        unlocked: false,
+        unlockKeyword: '小坏蛋 过去'
+      },
+      '5-D': {
+        name: '打破循环的方法',
+        content: '打破循环需要让小坏蛋自愿放弃，面对被封锁的记忆',
+        unlocked: false,
+        unlockCondition: ['5-A', '5-B', '5-C']
+      }
+    };
+
+    // 正确答案
+    var correctAnswers = {
+      q1: 'B',
+      q2: 'B',
+      q3: 'C'
+    };
+
+    // 初始化页面
+    function initPage() {
+      loadClueStatus();
+      updateClueDisplay();
+      checkAutoUnlock();
+      checkValidationUnlock();
+    }
+
+    // 加载线索状态
+    function loadClueStatus() {
+      var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      var clues = saveData.clues || {};
+      var originClues = clues.origin || {};
+
+      for (var clueId in originClues) { if (!originClues.hasOwnProperty(clueId)) continue; var unlocked = originClues[clueId];
+        if (clueData[clueId]) {
+          clueData[clueId].unlocked = unlocked;
+        }
+      }
+    }
+
+    // 更新线索显示
+    function updateClueDisplay() {
+      var unlockedCount = 0;
+
+      for (var clueId in clueData) { if (!clueData.hasOwnProperty(clueId)) continue; var data = clueData[clueId];
+        var element = document.getElementById('clue-' + clueId.toLowerCase());
+        var reviewElement = document.getElementById('review-' + clueId.toLowerCase());
+
+        if (data.unlocked && element) {
+          unlockedCount++;
+          element.classList.remove('locked');
+          element.querySelector('.clue-status').textContent = '已获得';
+          element.querySelector('.clue-status').classList.remove('locked');
+          element.querySelector('.clue-status').classList.add('unlocked');
+          element.querySelector('.clue-content').style.display = 'block';
+          var hint = element.querySelector('.clue-unlock-hint');
+          if (hint) hint.style.display = 'none';
+
+          if (reviewElement) {
+            reviewElement.classList.remove('missing');
+            reviewElement.textContent = '线索' + clueId + '：' + data.content;
+          }
+        }
+      }
+
+      return unlockedCount;
+    }
+
+    // 检查自动解锁条件
+    function checkAutoUnlock() {
+      var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      var clues = saveData.clues || {};
+      var originClues = clues.origin || {};
+
+      // 检查线索5-D的解锁条件
+      var has5A = originClues['5-A'] || false;
+      var has5B = originClues['5-B'] || false;
+      var has5C = originClues['5-C'] || false;
+
+      if (has5A && has5B && has5C && !clueData['5-D'].unlocked) {
+        // 自动解锁线索5-D
+        clueData['5-D'].unlocked = true;
+        saveData.clues = saveData.clues || {};
+        saveData.clues.origin = saveData.clues.origin || {};
+        saveData.clues.origin['5-D'] = true;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+
+        // 更新显示
+        var element = document.getElementById('clue-5d');
+        var reviewElement = document.getElementById('review-5d');
+        if (element) {
+          element.classList.remove('locked');
+          element.querySelector('.clue-status').textContent = '已获得';
+          element.querySelector('.clue-status').classList.remove('locked');
+          element.querySelector('.clue-status').classList.add('unlocked');
+          element.querySelector('.clue-content').style.display = 'block';
+          var hint = element.querySelector('.clue-unlock-hint');
+          if (hint) hint.style.display = 'none';
+        }
+        if (reviewElement) {
+          reviewElement.classList.remove('missing');
+          reviewElement.textContent = '线索5-D：' + clueData['5-D'].content;
+        }
+      }
+    }
+
+    // 检查是否解锁验证关卡
+    function checkValidationUnlock() {
+      var unlockedCount = updateClueDisplay();
+      var validationSection = document.getElementById('validation-section');
+
+      if (unlockedCount >= 4) {
+        validationSection.classList.remove('locked');
+      }
+    }
+
+    // 选择选项
+    function selectOption(question, value) {
+      document.getElementById(question + '-' + value).checked = true;
+    }
+
+    // 提交答案
+    function submitAnswer() {
+      var q1 = document.querySelector('input[name="q1"]:checked');
+      var q2 = document.querySelector('input[name="q2"]:checked');
+      var q3 = document.querySelector('input[name="q3"]:checked');
+      var feedbackDiv = document.getElementById('validation-feedback');
+
+      if (!q1 || !q2 || !q3) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">请回答所有问题</div>';
+        return;
+      }
+
+      var answers = {
+        q1: q1.value,
+        q2: q2.value,
+        q3: q3.value
+      };
+
+      var correctCount = 0;
+      if (answers.q1 === correctAnswers.q1) correctCount++;
+      if (answers.q2 === correctAnswers.q2) correctCount++;
+      if (answers.q3 === correctAnswers.q3) correctCount++;
+
+      if (correctCount === 3) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback success">' +
+            '<strong>✓ 最终验证通过</strong><br><br>' +
+            '你找到了打破循环的方法。<br><br>' +
+            '时间循环的根源是小坏蛋在濒死时的强烈愿望。<br>' +
+            '他是村长的孩子，1984年那场意外的受害者。<br><br>' +
+            '他的影子承载着那一天的记忆，在保护他永远不用面对真相。<br><br>' +
+            '但要拯救云处村，我们必须帮助他面对真相，让他自愿放弃循环。<br><br>' +
+            '现在，是时候进入云处村，找到小坏蛋，让他愿意醒来了。' +
+          '</div>';
+
+        // 保存完成状态
+        var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+        saveData.puzzlesSolved = saveData.puzzlesSolved || {};
+        saveData.puzzlesSolved.origin = true;
+        saveData.allPuzzlesSolved = true;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+
+        // 显示解决横幅
+        document.getElementById('solved-banner').style.display = 'block';
+
+        // 隐藏选项和按钮
+        document.getElementById('q1-options').style.display = 'none';
+        document.getElementById('q2-options').style.display = 'none';
+        document.getElementById('q3-options').style.display = 'none';
+        document.querySelector('.validation-submit-btn').style.display = 'none';
+      } else {
+        feedbackDiv.innerHTML = '
+          <div class="validation-feedback error">
+            ❌ 答案有误（' + correctCount + '/3）<br>
+            请重新审视线索，特别是关于循环起源的部分。
+          </div>
+        ';
+      }
+    }
+
+    // 监听来自搜索的解锁消息
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'yunchu_save') {
+        initPage();
+      }
+    });
+
+    // 页面加载时初始化
+    initPage();
+  </script>
+</body>
+</html>

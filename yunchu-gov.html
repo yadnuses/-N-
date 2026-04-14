@@ -54,57 +54,23 @@
     </div>
   </div>
 
-  <!-- 通知公告 + 新闻 -->
+  <!-- 通知公告 -->
   <div class="content-row">
-
-    <!-- 左：政务公告 -->
-    <div class="content-card" id="card-notice">
+    <div class="content-card" id="card-notice" style="flex:1;">
       <div class="card-header">
         <span class="card-title">通知公告</span>
-        <a href="#" class="card-more">更多 &gt;</a>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="notice-tabs">
+            <span class="notice-tab active" data-type="all">全部</span>
+            <span class="notice-tab" data-type="top">紧急</span>
+            <span class="notice-tab" data-type="notice">通知</span>
+            <span class="notice-tab" data-type="pub">公示</span>
+          </div>
+          <a href="#" class="card-more">更多 &gt;</a>
+        </div>
       </div>
-      <ul class="card-list">
-        <li><span class="date">2025-06-10</span><a href="notice-1.html">关于举办"凤凰归巢"夏至观测仪式的通知</a></li>
-        <li><span class="date">2025-05-28</span><a href="notice-2.html">云处村道路修缮施工通告</a></li>
-        <li><span class="date">2025-05-12</span><a href="notice-3.html">关于开展春耕农业技术培训的通知</a></li>
-        <li><span class="date">2025-04-30</span><a href="notice-4.html">云处村饮用水安全检测结果公示</a></li>
-        <li><span class="date">2025-04-15</span><a href="notice-5.html">关于清明节期间防火工作的紧急通知</a></li>
-      </ul>
+      <div id="notice-list"></div>
     </div>
-
-<!-- 右：快捷入口 -->
-    <div class="content-card" id="card-links">
-      <div class="card-header">
-        <span class="card-title">办事入口</span>
-      </div>
-      <div class="quick-links">
-        <a href="#" class="quick-link-item">
-          <span class="ql-icon">📋</span>
-          <span>政务公开</span>
-        </a>
-        <a href="#" class="quick-link-item">
-          <span class="ql-icon">🏛</span>
-          <span>村务管理</span>
-        </a>
-        <a href="#" class="quick-link-item">
-          <span class="ql-icon">🌾</span>
-          <span>农业服务</span>
-        </a>
-        <a href="#" class="quick-link-item">
-          <span class="ql-icon">📞</span>
-          <span>便民热线</span>
-        </a>
-        <a href="#" class="quick-link-item">
-          <span class="ql-icon">🗂</span>
-          <span>档案查询</span>
-        </a>
-        <a href="#" class="quick-link-item">
-          <span class="ql-icon">📌</span>
-          <span>投诉建议</span>
-        </a>
-      </div>
-    </div>
-
   </div>
 
 
@@ -136,6 +102,55 @@
 var d = new Date();
 document.getElementById('today-date').textContent =
   d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日';
+
+// ===== 通知公告数据 =====
+var noticeData = [
+  { date:'2025-06-10', title:'关于举办"凤凰归巢"夏至观测仪式的通知', url:'notice-1.html', type:'notice', top:true,  summary:'定于2025年6月21日夏至当日举办第128届凤凰归巢观测仪式，请各组配合做好接待工作。' },
+  { date:'2025-05-28', title:'云处村道路修缮施工通告',                  url:'notice-2.html', type:'notice', top:false, summary:'村主干道自6月1日起进行路面修缮，施工期间请绕行西侧小路，预计工期15天。' },
+  { date:'2025-05-12', title:'关于开展春耕农业技术培训的通知',          url:'notice-3.html', type:'notice', top:false, summary:'定于5月20日在村委会大院举办春耕农业技术培训，欢迎有需要的村民参加。' },
+  { date:'2025-04-30', title:'云处村饮用水安全检测结果公示',            url:'notice-4.html', type:'pub',    top:false, summary:'经县卫生监督所检测，全村饮用水各项指标均符合国家标准，结果向全体村民公示。' },
+  { date:'2025-04-15', title:'关于清明节期间防火工作的紧急通知',        url:'notice-5.html', type:'top',    top:true,  summary:'清明节期间严禁在山林周边燃放烟花爆竹及野外用火，违者依法追究责任。' }
+];
+
+var currentNoticeType = 'all';
+
+var typeLabel = { notice:'通知', pub:'公示', top:'紧急' };
+var typeColor = { notice:'#2a6e3f', pub:'#1a5a8a', top:'#c0392b' };
+var typeBg    = { notice:'rgba(42,110,63,0.08)', pub:'rgba(26,90,138,0.08)', top:'rgba(192,57,43,0.08)' };
+
+function renderNotices(type) {
+  var list = noticeData.filter(function(n) { return type === 'all' || n.type === type || (type === 'top' && n.top); });
+  var el = document.getElementById('notice-list');
+  el.innerHTML = '';
+  list.forEach(function(n) {
+    var row = document.createElement('a');
+    row.href = n.url;
+    row.className = 'notice-row';
+    row.innerHTML =
+      '<div class="notice-row-left">' +
+        (n.top ? '<span class="notice-badge top">紧急</span>' : '') +
+        '<span class="notice-badge" style="color:' + typeColor[n.type] + ';background:' + typeBg[n.type] + ';border-color:' + typeColor[n.type] + '33;">' + typeLabel[n.type] + '</span>' +
+        '<span class="notice-title">' + n.title + '</span>' +
+      '</div>' +
+      '<div class="notice-row-right">' +
+        '<span class="notice-summary">' + n.summary + '</span>' +
+        '<span class="notice-date">' + n.date + '</span>' +
+      '</div>';
+    el.appendChild(row);
+  });
+}
+
+renderNotices('all');
+
+// Tab 切换
+document.querySelectorAll('.notice-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.notice-tab').forEach(function(t) { t.classList.remove('active'); });
+    this.classList.add('active');
+    currentNoticeType = this.getAttribute('data-type');
+    renderNotices(currentNoticeType);
+  });
+});
 
 
 // 政务新闻列表数据

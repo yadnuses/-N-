@@ -814,6 +814,207 @@
     @keyframes fadeInUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
     .fade-in { animation: fadeInUp 0.4s ease forwards; }
 
+    /* ===== 场景列表：脉冲可探索状态 ===== */
+    .loc-item.available {
+      border-left: 3px solid rgba(200,160,48,0.6);
+      padding-left: 13px;
+    }
+    .loc-item.available .loc-name { color: var(--accent); }
+    .loc-item.available .loc-badge { animation: pulse-badge 2s ease-in-out infinite; }
+    @keyframes pulse-badge {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+    .loc-item.done-scene { border-left: 3px solid rgba(93,184,112,0.5); padding-left: 13px; }
+    .loc-item.done-scene .loc-name { color: var(--green); }
+    .loc-badge.done-scene { background: rgba(93,184,112,0.18); color: var(--green); border: 1px solid rgba(93,184,112,0.5); }
+
+    /* ===== wcSys 环境描写横幅 ===== */
+    .wc-env-banner {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, rgba(26,45,20,0.85) 0%, rgba(14,20,14,0.7) 100%);
+      border-left: 3px solid var(--accent2);
+      border-radius: 0 8px 8px 0;
+      font-size: 12px;
+      color: #a0c870;
+      font-style: italic;
+      letter-spacing: 0.5px;
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    .wc-env-banner.show { opacity: 1; transform: translateY(0); }
+    .wc-env-banner.dramatic {
+      background: linear-gradient(135deg, rgba(30,10,10,0.9) 0%, rgba(14,8,8,0.8) 100%);
+      border-left-color: #c05050;
+      color: #d09090;
+    }
+    .wc-env-banner.light {
+      background: linear-gradient(135deg, rgba(20,30,40,0.8) 0%, rgba(14,20,28,0.7) 100%);
+      border-left-color: #6090c0;
+      color: #90b8d8;
+    }
+
+    /* ===== 道具获得：全屏中央弹出 ===== */
+    #item-acquire-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    #item-acquire-card {
+      background: linear-gradient(135deg, var(--surface2) 0%, #1e2a18 100%);
+      border: 1.5px solid var(--accent);
+      border-radius: 18px;
+      padding: 28px 40px;
+      text-align: center;
+      box-shadow: 0 0 0 0 rgba(200,160,48,0.4);
+      transform: scale(0.6);
+      opacity: 0;
+      transition: transform 0.4s cubic-bezier(.18,.89,.32,1.28), opacity 0.3s;
+      max-width: 320px;
+      position: relative;
+      overflow: hidden;
+    }
+    #item-acquire-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(200,160,48,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #item-acquire-card.show { transform: scale(1); opacity: 1; }
+    #item-acquire-card.hide { transform: scale(0.8); opacity: 0; transition: transform 0.25s, opacity 0.25s; }
+    #iac-label { font-size: 10px; color: var(--text-mute); font-family: var(--mono); letter-spacing: 3px; margin-bottom: 12px; }
+    #iac-icon { font-size: 44px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(200,160,48,0.5)); }
+    #iac-name { font-size: 18px; font-weight: bold; color: var(--accent); letter-spacing: 2px; margin-bottom: 6px; }
+    #iac-desc { font-size: 12px; color: var(--text-dim); line-height: 1.7; }
+
+    /* ===== 关键选项：金色/危险标记 ===== */
+    .chat-choice-item.critical {
+      border-color: rgba(200,160,48,0.6);
+      background: rgba(200,160,48,0.07);
+      color: #d4b860;
+    }
+    .chat-choice-item.critical::before {
+      content: '⚠ ';
+      color: var(--accent);
+      font-size: 11px;
+    }
+    .chat-choice-item.critical:hover {
+      background: rgba(200,160,48,0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .chat-choice-item.danger {
+      border-color: rgba(180,60,60,0.5);
+      background: rgba(180,60,60,0.06);
+      color: #d08080;
+    }
+    .chat-choice-item.danger::before {
+      content: '✕ ';
+      color: #c05050;
+      font-size: 11px;
+    }
+    .chat-choice-item.danger:hover {
+      background: rgba(180,60,60,0.14);
+      border-color: #c05050;
+      color: #e09090;
+    }
+    .chat-choice-item.item-use {
+      border-color: rgba(100,180,160,0.4);
+      background: rgba(100,180,160,0.05);
+      color: #80c8b8;
+    }
+    .chat-choice-item.item-use::before {
+      content: '🎒 ';
+      font-size: 11px;
+    }
+    .chat-choice-item.item-use:hover {
+      background: rgba(100,180,160,0.12);
+      border-color: rgba(100,180,160,0.7);
+      color: #a0e8d8;
+    }
+
+    /* ===== 结局：暗场过渡遮罩 ===== */
+    #ending-blackout {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.2s ease;
+    }
+    #ending-blackout.active { opacity: 1; pointer-events: auto; }
+
+    /* ===== 背包：2列网格卡片化 ===== */
+    #backpack-panel {
+      display: none;
+      position: absolute;
+      bottom: 64px; right: 0;
+      width: 310px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    #backpack-panel.show { display: block; }
+    #backpack-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .bp-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      position: relative;
+    }
+    .bp-card:hover { border-color: var(--accent2); background: #1e2a18; transform: translateY(-2px); }
+    .bp-card-icon { font-size: 26px; margin-bottom: 6px; }
+    .bp-card-name { font-size: 11px; font-weight: bold; color: var(--text); line-height: 1.3; }
+
+    /* 道具详情弹窗 */
+    #item-detail-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.6);
+    }
+    #item-detail-popup.show { display: flex; }
+    #item-detail-inner {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-top: 3px solid var(--accent2);
+      border-radius: 16px;
+      padding: 28px 32px;
+      max-width: 340px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      animation: fadeInUp 0.25s ease;
+    }
+    #idp-icon { font-size: 40px; margin-bottom: 12px; }
+    #idp-name { font-size: 17px; font-weight: bold; color: var(--accent); letter-spacing: 2px; margin-bottom: 8px; }
+    #idp-desc { font-size: 13px; color: var(--text-dim); line-height: 1.8; margin-bottom: 20px; }
+    #idp-close { font-size: 12px; color: var(--text-mute); font-family: var(--mono); cursor: pointer; letter-spacing: 1px; }
+    #idp-close:hover { color: var(--text); }
+
     /* 隐藏辅助 */
     .hidden { display: none !important; }
   </style>
@@ -965,18 +1166,33 @@
 <div id="backpack-bar">
   <div id="backpack-panel">
     <div class="bp-title">🎒 背包</div>
-    <div id="backpack-items">
-      <div class="bp-empty" id="bp-empty-tip">背包空空如也</div>
-    </div>
+    <div class="bp-empty" id="bp-empty-tip">背包空空如也</div>
+    <div id="backpack-grid"></div>
   </div>
   <div class="backpack-toggle" onclick="toggleBackpack()" title="背包">🎒</div>
 </div>
 
-<!-- 道具获得提示 -->
-<div id="item-toast">
-  <div class="it-label">✦ 获得道具</div>
-  <div class="it-name" id="it-name"></div>
-  <div class="it-desc" id="it-desc"></div>
+<!-- 道具获得：中央弹出卡片 -->
+<div id="item-acquire-overlay">
+  <div id="item-acquire-card">
+    <div id="iac-label">✦ 获 得 道 具 ✦</div>
+    <div id="iac-icon">📦</div>
+    <div id="iac-name"></div>
+    <div id="iac-desc"></div>
+  </div>
+</div>
+
+<!-- 结局暗场遮罩 -->
+<div id="ending-blackout"></div>
+
+<!-- 道具详情弹窗 -->
+<div id="item-detail-popup" onclick="closeItemDetail()">
+  <div id="item-detail-inner" onclick="event.stopPropagation()">
+    <div id="idp-icon"></div>
+    <div id="idp-name"></div>
+    <div id="idp-desc"></div>
+    <div id="idp-close" onclick="closeItemDetail()">关闭 ×</div>
+  </div>
 </div>
 
 <!-- 观测者日志弹窗 -->
@@ -1035,44 +1251,59 @@ function gainItem(id) {
   var item = ITEMS[id];
   if (item) {
     addLogEntry('获得道具：' + item.name, item.desc);
-    showItemToast(item.name, item.desc);
+    showItemToast(item.name, item.desc, item.icon);
   }
   renderBackpack();
   writeSave();
 }
 
-function showItemToast(name, desc) {
-  var t = document.getElementById('item-toast');
-  document.getElementById('it-name').textContent = name;
-  document.getElementById('it-desc').textContent = desc;
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 3000);
+function showItemToast(name, desc, icon) {
+  var card = document.getElementById('item-acquire-card');
+  document.getElementById('iac-icon').textContent = icon || '📦';
+  document.getElementById('iac-name').textContent = name;
+  document.getElementById('iac-desc').textContent = desc;
+  card.classList.remove('hide');
+  card.classList.add('show');
+  setTimeout(function() {
+    card.classList.remove('show');
+    card.classList.add('hide');
+  }, 2800);
 }
 
 function renderBackpack() {
-  var container = document.getElementById('backpack-items');
+  var grid = document.getElementById('backpack-grid');
   var emptyTip = document.getElementById('bp-empty-tip');
-  if (!container) return;
-  // 清除旧条目（保留 empty tip）
-  var children = Array.prototype.slice.call(container.children);
-  for (var i = 0; i < children.length; i++) {
-    if (children[i] !== emptyTip) container.removeChild(children[i]);
-  }
+  if (!grid) return;
+  grid.innerHTML = '';
   if (save.items.length === 0) {
     emptyTip.style.display = '';
     return;
   }
   emptyTip.style.display = 'none';
   for (var j = 0; j < save.items.length; j++) {
-    var item = ITEMS[save.items[j]];
+    var id = save.items[j];
+    var item = ITEMS[id];
     if (!item) continue;
-    var div = document.createElement('div');
-    div.className = 'bp-item';
-    div.innerHTML = '<div class="bp-item-icon">' + item.icon + '</div>' +
-      '<div><div class="bp-item-name">' + item.name + '</div>' +
-      '<div class="bp-item-desc">' + item.desc + '</div></div>';
-    container.appendChild(div);
+    var card = document.createElement('div');
+    card.className = 'bp-card';
+    card.innerHTML = '<div class="bp-card-icon">' + item.icon + '</div>' +
+      '<div class="bp-card-name">' + item.name + '</div>';
+    (function(capturedItem) {
+      card.onclick = function() { showItemDetail(capturedItem); };
+    })(item);
+    grid.appendChild(card);
   }
+}
+
+function showItemDetail(item) {
+  document.getElementById('idp-icon').textContent = item.icon;
+  document.getElementById('idp-name').textContent = item.name;
+  document.getElementById('idp-desc').textContent = item.desc;
+  document.getElementById('item-detail-popup').classList.add('show');
+}
+
+function closeItemDetail() {
+  document.getElementById('item-detail-popup').classList.remove('show');
 }
 
 function toggleBackpack() {
@@ -1481,6 +1712,7 @@ function initSteleCanvas(canvas, progressEl, sceneContent) {
       addLogEntry('谜题·石碑铭文', '"此村名云处，凤凰栖之所。三月三重临，轮回永不休。若问解脱法，心诚影自除。"——影子是关键。');
       writeSave();
       unlockScene('square');
+      markSceneDone('village-gate');
       // 禁止继续擦拭
       canvas.style.pointerEvents = 'none';
       // 在石碑下方显示完成提示和继续按钮
@@ -1648,6 +1880,7 @@ function clickSymbol(sid) {
       save.puzzles.square = true;
       unlockScene('underground');
       unlockScene('shanha-park');
+      markSceneDone('square');
       addLogEntry('谜题·同心广场', '按照东→西→南→北→东南→西北→东北→西南的顺序激活八方符号，地下入口打开。');
       writeSave();
       // 成功反馈
@@ -1690,7 +1923,7 @@ function resetSymbols() {
 // ===== 场景三：地下密室 =====
 var undergroundDone = save.puzzles.underground || false;
 // 密码：循环次数（128 — 第128届夏至观测仪式）
-var CAPSULE_CODE = '128128';
+var CAPSULE_CODE = '128';
 
 function renderUnderground() {
   var c = document.getElementById('scene-content');
@@ -1705,10 +1938,9 @@ function renderUnderground() {
   clueBox.className = 'puzzle-box';
   clueBox.innerHTML = '<div class="puzzle-title">🔎 墙壁符号（线索）</div>' +
     '<div class="puzzle-desc">' +
-    '墙上的符号被解译后，指向一段数字：<br>' +
-    '<span style="color:var(--accent);font-family:var(--mono);font-size:14px;letter-spacing:3px;">一·二·八·一·二·八</span><br><br>' +
+    '墙上的符号被解译后，指向一段数字。<br><br>' +
     '角落处的石刻标注着：<br>' +
-    '"第 <span style="color:var(--accent2);">一百二十八</span> 届夏至观测仪式——循环至今"</div>';
+    '"第 <span style="color:var(--accent2);">◈◇◉</span> 届夏至观测仪式——循环至今"</div>';
   wrap.appendChild(clueBox);
 
   if (undergroundDone) {
@@ -1740,11 +1972,11 @@ function renderUnderground() {
   var pb = document.createElement('div');
   pb.className = 'puzzle-box';
   pb.innerHTML = '<div class="puzzle-title">🔐 谜题 · 时间胶囊密码锁</div>' +
-    '<div class="puzzle-desc">时间胶囊上有一个6位数字密码锁。根据墙壁符号和石刻推断密码。</div>';
+    '<div class="puzzle-desc">时间胶囊上有一个3位数字密码锁。根据墙壁符号和石刻推断密码。</div>';
 
   var inputRow = document.createElement('div');
   inputRow.className = 'code-input-row';
-  for (var i = 0; i < 6; i++) {
+  for (var i = 0; i < 3; i++) {
     var inp = document.createElement('input');
     inp.type = 'text';
     inp.className = 'code-input';
@@ -1754,7 +1986,7 @@ function renderUnderground() {
     inp.addEventListener('input', function() {
       this.value = this.value.replace(/[^0-9]/g, '');
       var idx = parseInt(this.dataset.idx);
-      if (this.value && idx < 5) {
+      if (this.value && idx < 2) {
         var next = document.getElementById('code-' + (idx + 1));
         if (next) next.focus();
       }
@@ -1776,7 +2008,7 @@ function renderUnderground() {
   var codeHint = document.createElement('div');
   codeHint.id = 'capsule-code-hint';
   codeHint.style.cssText = 'font-size:11px;color:var(--text-mute);font-family:var(--mono);text-align:center;margin-top:8px;';
-  codeHint.textContent = '输入6位密码后自动验证';
+  codeHint.textContent = '输入3位密码后自动验证';
   pb.appendChild(codeHint);
 
   wrap.appendChild(pb);
@@ -1790,7 +2022,7 @@ function renderUnderground() {
 
 function checkCapsuleCode() {
   var code = '';
-  for (var i = 0; i < 6; i++) {
+  for (var i = 0; i < 3; i++) {
     var inp = document.getElementById('code-' + i);
     if (!inp || !inp.value) return;
     code += inp.value;
@@ -1802,7 +2034,7 @@ function checkCapsuleCode() {
     gainItem('capsule-letter');
     gainItem('capsule-photo');
     gainItem('mirror');
-    addLogEntry('谜题·时间胶囊', '密码：128128（第128届循环）。胶囊内有来自过去的你留下的信和照片，以及一面能窥见过去循环的【轮回镜】。');
+    addLogEntry('谜题·时间胶囊', '密码：128（第128届循环）。胶囊内有来自过去的你留下的信和照片，以及一面能窥见过去循环的【轮回镜】。');
     writeSave();
     if (hint) { hint.style.color = 'var(--green)'; hint.textContent = '✓ 密码正确！胶囊已打开'; }
     setTimeout(function() {
@@ -1892,6 +2124,24 @@ function exitChatMode() {
   document.getElementById('chat-choice-btns').innerHTML = '';
 }
 
+// 选项关键词分类
+var CRITICAL_KEYWORDS = ['切断', '刺入', '打破循环', '举起', '斩断', '（举起'];
+var DANGER_KEYWORDS   = ['放弃', '让循环继续', '让小满', '不帮助', '离开'];
+var ITEM_KEYWORDS     = ['使用', '（使用', '触摸', '拿出', '取出'];
+
+function classifyChoice(text) {
+  for (var i = 0; i < CRITICAL_KEYWORDS.length; i++) {
+    if (text.indexOf(CRITICAL_KEYWORDS[i]) !== -1) return 'critical';
+  }
+  for (var j = 0; j < DANGER_KEYWORDS.length; j++) {
+    if (text.indexOf(DANGER_KEYWORDS[j]) !== -1) return 'danger';
+  }
+  for (var k = 0; k < ITEM_KEYWORDS.length; k++) {
+    if (text.indexOf(ITEM_KEYWORDS[k]) !== -1) return 'item-use';
+  }
+  return '';
+}
+
 // 显示底部选项
 function showChoices(choices) {
   var bar = document.getElementById('chat-choice-bar');
@@ -1900,7 +2150,8 @@ function showChoices(choices) {
   bar.classList.remove('hidden');
   choices.forEach(function(ch) {
     var btn = document.createElement('div');
-    btn.className = 'chat-choice-item';
+    var extra = ch.cls || classifyChoice(ch.text);
+    btn.className = 'chat-choice-item' + (extra ? ' ' + extra : '');
     btn.textContent = ch.text;
     btn.onclick = function() {
       btns.innerHTML = '';
@@ -1916,21 +2167,41 @@ function hideChoices() {
   document.getElementById('chat-choice-btns').innerHTML = '';
 }
 
-// 向聊天区追加系统消息（居中小字）
+// 向聊天区追加系统消息
+// 以 "—" 开头 → 渲染为环境描写横幅；【...】 → 戏剧性横幅；其余 → 居中小字
 function wcSys(c, text, cb) {
-  var row = document.createElement('div');
-  row.className = 'wc-msg-row';
-  var bub = document.createElement('div');
-  bub.className = 'wc-bubble sys';
-  bub.style.width = '100%';
-  bub.textContent = text;
-  row.appendChild(bub);
-  c.appendChild(row);
-  setTimeout(function() {
-    row.classList.add('show');
-    c.scrollTop = c.scrollHeight;
-    if (cb) setTimeout(cb, 300);
-  }, 20);
+  var isEnv = text.charAt(0) === '—' || text.charAt(0) === '\u2014';
+  var isDramatic = text.charAt(0) === '【';
+  var isLight = text.indexOf('月光') !== -1 || text.indexOf('星') !== -1 || text.indexOf('光柱') !== -1;
+
+  if (isEnv || isDramatic) {
+    var banner = document.createElement('div');
+    var cls = 'wc-env-banner';
+    if (isDramatic) cls += ' dramatic';
+    else if (isLight) cls += ' light';
+    banner.className = cls;
+    banner.textContent = text;
+    c.appendChild(banner);
+    setTimeout(function() {
+      banner.classList.add('show');
+      c.scrollTop = c.scrollHeight;
+      if (cb) setTimeout(cb, 500);
+    }, 20);
+  } else {
+    var row = document.createElement('div');
+    row.className = 'wc-msg-row';
+    var bub = document.createElement('div');
+    bub.className = 'wc-bubble sys';
+    bub.style.width = '100%';
+    bub.textContent = text;
+    row.appendChild(bub);
+    c.appendChild(row);
+    setTimeout(function() {
+      row.classList.add('show');
+      c.scrollTop = c.scrollHeight;
+      if (cb) setTimeout(cb, 300);
+    }, 20);
+  }
 }
 
 // 追加玩家气泡（右侧，无打字效果）
@@ -2191,6 +2462,9 @@ var PIECE_H = 100;    // 每块显示高
 var IMG_W = 300;      // 原图在拼图区的宽
 var IMG_H = 600;      // 原图在拼图区的高
 
+// 拼图操作历史（用于"上一步"）
+var puzzleHistory = [];
+
 // 打乱顺序（Fisher-Yates），确保不等于正确序列
 function shufflePieces() {
   var arr = [];
@@ -2207,6 +2481,7 @@ function shufflePieces() {
 }
 
 function showShanhaPuzzle(c) {
+  puzzleHistory = [];
   var wrap = document.createElement('div');
   wrap.style.cssText = 'padding:0 0 20px;';
 
@@ -2299,17 +2574,6 @@ function showShanhaPuzzle(c) {
       slot.dataset.slot = String(slotIdx);
       slot.style.cssText = 'width:' + PIECE_W + 'px;height:' + PIECE_H + 'px;position:relative;box-sizing:border-box;';
 
-      // 槽背景：显示该位置的目标图片（半透明幽灵）
-      var ghost = document.createElement('div');
-      var col = slotIdx % PUZZLE_COLS;
-      var row = Math.floor(slotIdx / PUZZLE_COLS);
-      ghost.style.cssText = 'position:absolute;inset:0;' +
-        'background-image:url(images/phoenix-puzzle.png);' +
-        'background-size:' + IMG_W + 'px ' + IMG_H + 'px;' +
-        'background-position:-' + (col * PIECE_W) + 'px -' + (row * PIECE_H) + 'px;' +
-        'opacity:0.15;pointer-events:none;';
-      slot.appendChild(ghost);
-
       // 槽边框
       slot.style.border = '1px solid rgba(200,160,48,0.15)';
       slot.style.background = 'rgba(20,26,18,0.8)';
@@ -2351,6 +2615,9 @@ function showShanhaPuzzle(c) {
           }
         }
 
+        // 记录历史（用于上一步）
+        puzzleHistory.push({fromSlot: fromSlot, targetSlot: targetSlot, pieceId: pieceId});
+
         // 放入目标槽
         shanhaBoard[targetSlot] = pieceId;
         save.puzzles.shanhaBoard = shanhaBoard;
@@ -2369,6 +2636,18 @@ function showShanhaPuzzle(c) {
   unplaced.forEach(function(pieceId) {
     tray.appendChild(makeTrayPiece(pieceId));
   });
+
+  // ---- 右侧操作区：上一步 ----
+  var controlsWrap = document.createElement('div');
+  controlsWrap.style.cssText = 'margin-top:16px;text-align:center;';
+  var undoBtn = document.createElement('button');
+  undoBtn.textContent = '↩ 上一步';
+  undoBtn.style.cssText = 'padding:8px 18px;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:6px;cursor:pointer;font-size:13px;font-family:inherit;';
+  undoBtn.onmouseover = function() { this.style.background = 'var(--surface3)'; };
+  undoBtn.onmouseout = function() { this.style.background = 'var(--surface2)'; };
+  undoBtn.onclick = function() { undoPuzzleMove(); };
+  controlsWrap.appendChild(undoBtn);
+  trayWrap.appendChild(controlsWrap);
 
   updatePuzzleProgress();
 }
@@ -2437,6 +2716,34 @@ function makeTrayPiece(pieceId) {
   return cell;
 }
 
+function undoPuzzleMove() {
+  if (!puzzleHistory.length) return;
+  var move = puzzleHistory.pop();
+
+  // 从目标槽移除碎片
+  shanhaBoard[move.targetSlot] = -1;
+  var targetSlotEl = document.getElementById('slot-' + move.targetSlot);
+  if (targetSlotEl) {
+    var piece = targetSlotEl.querySelector('.puzzle-piece');
+    if (piece) piece.remove();
+  }
+
+  // 将碎片恢复到来源位置
+  if (move.fromSlot === 'tray') {
+    var tray = document.getElementById('puzzle-tray');
+    if (tray) tray.appendChild(makeTrayPiece(move.pieceId));
+  } else {
+    var srcSlotIdx = parseInt(move.fromSlot, 10);
+    shanhaBoard[srcSlotIdx] = move.pieceId;
+    var srcSlotEl = document.getElementById('slot-' + srcSlotIdx);
+    if (srcSlotEl) renderPieceInSlot(srcSlotEl, move.pieceId);
+  }
+
+  save.puzzles.shanhaBoard = shanhaBoard;
+  writeSave();
+  updatePuzzleProgress();
+}
+
 function updatePuzzleProgress() {
   var count = 0;
   for (var i = 0; i < PIECE_COUNT; i++) { if (shanhaBoard[i] !== -1) count++; }
@@ -2456,6 +2763,7 @@ function checkPuzzleDone() {
   writeSave();
   unlockScene('guxi-tai');
   unlockScene('blacksmith');
+  markSceneDone('shanha-park');
 
   // 完成动效：绿色高亮所有槽 + 延迟刷新
   var slots = document.querySelectorAll('#puzzle-board > div');
@@ -2690,6 +2998,7 @@ function doGuxiRitual(c) {
                     guxiDone = true;
                     save.puzzles.guxiDone = true;
                     gainItem('phoenix-tear');
+                    markSceneDone('guxi-tai');
                     addLogEntry('人物·凤英阿婆·传承仪式', '七盏灯全部点燃，阿婆消散前留下"凤凰泪"。她的最后一句话："那个人……就是你……"');
                     writeSave();
                     showChoices([
@@ -3119,6 +3428,7 @@ function silverLockUse(c) {
           gainItem('steel-dagger');
           gainItem('silver-lock');
           unlockScene('guanying-tai');
+          markSceneDone('blacksmith');
           addLogEntry('人物·雷铁山·结局', '银锁锻造完成，小满获得解脱。雷铁山赠予【时之钢匕首】，成为你的盟友。');
           writeSave();
           wcNpc(c, 'npc-smith', '雷', '雷铁山', '这把匕首……是我额外打的。你拿去，切断更多锁链。', 900, function() {
@@ -3448,6 +3758,7 @@ function chenCutChoice(c) {
                               save.puzzles.chenDone = true;
                               gainItem('obsession-crystal');
                               unlockScene('foer-yan');
+                              markSceneDone('guanying-tai');
                               addLogEntry('人物·陈姐·结局', '小石头获得解脱，陈姐放下执念。影子被削弱，裂缝闭合。获得执念结晶。');
                               writeSave();
                               showChoices([
@@ -3988,6 +4299,18 @@ function playEndingC(c) {
 
 // ── 结局画面 ──
 function showEndingScreen(which) {
+  // 暗场过渡
+  var blackout = document.getElementById('ending-blackout');
+  blackout.classList.add('active');
+  setTimeout(function() {
+    doShowEndingScreen(which);
+    setTimeout(function() {
+      blackout.classList.remove('active');
+    }, 600);
+  }, 1200);
+}
+
+function doShowEndingScreen(which) {
   // 关闭聊天模式，全屏结局
   exitChatMode();
   var c = document.getElementById('scene-content');
@@ -4157,19 +4480,28 @@ function showEndingScreen(which) {
 function unlockScene(id) {
   if (UNLOCKED_SCENES.indexOf(id) === -1) UNLOCKED_SCENES.push(id);
   var locEl = document.getElementById('loc-' + id);
-  if (locEl) locEl.classList.remove('locked');
+  if (locEl) { locEl.classList.remove('locked'); locEl.classList.add('available'); }
   var badge = document.getElementById('badge-' + id);
   if (badge) { badge.textContent = '可前往'; badge.className = 'loc-badge open'; }
   if (SCENES[id] && SCENES[id].status === '🔒 未开放') SCENES[id].status = '探索中';
 }
 
+function markSceneDone(id) {
+  var locEl = document.getElementById('loc-' + id);
+  if (locEl) { locEl.classList.remove('available'); locEl.classList.add('done-scene'); }
+  var badge = document.getElementById('badge-' + id);
+  if (badge) { badge.textContent = '✓ 完成'; badge.className = 'loc-badge done-scene'; }
+  if (SCENES[id]) SCENES[id].status = '已完成';
+}
+
 // ===== 初始化 =====
-// 根据存档恢复已解锁地点
-if (save.puzzles.stele >= 2)   unlockScene('square');
-if (save.puzzles.square)       { unlockScene('underground'); unlockScene('shanha-park'); }
-if (save.puzzles.shanhaPuzzle) { unlockScene('guxi-tai'); unlockScene('blacksmith'); }
-if (save.puzzles.smithDone)    { unlockScene('guanying-tai'); }
-if (save.puzzles.chenDone)     { unlockScene('foer-yan'); }
+// 根据存档恢复已解锁地点和已完成状态
+if (save.puzzles.stele >= 2)   { unlockScene('square'); markSceneDone('village-gate'); }
+if (save.puzzles.square)       { unlockScene('underground'); unlockScene('shanha-park'); markSceneDone('square'); }
+if (save.puzzles.shanhaPuzzle) { unlockScene('guxi-tai'); unlockScene('blacksmith'); markSceneDone('shanha-park'); }
+if (save.puzzles.guxiDone)     { markSceneDone('guxi-tai'); }
+if (save.puzzles.smithDone)    { unlockScene('guanying-tai'); markSceneDone('blacksmith'); }
+if (save.puzzles.chenDone)     { unlockScene('foer-yan'); markSceneDone('guanying-tai'); }
 
 // 进入默认场景
 gotoScene('village-gate');

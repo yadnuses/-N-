@@ -1,0 +1,388 @@
+/* ============================================
+   耘雀内网 - 独立页面公共样式
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Mondo风格 · 云处村政府色系 */
+  --gov-dark:    #0f1f14;
+  --gov-deep:    #1a3d28;
+  --gov-mid:     #2a5a3f;
+  --gov-light:   #3a7a52;
+  --gov-gold:    #c9a227;
+  --gov-amber:   #e8b94a;
+  --gov-cream:   #f0e6d0;
+
+  --bg:        var(--gov-dark);
+  --surface:   rgba(26, 61, 40, 0.25);
+  --surface2:  rgba(42, 90, 63, 0.2);
+  --border:    rgba(201, 162, 39, 0.25);
+  --accent:    var(--gov-gold);
+  --accent2:   var(--gov-amber);
+  --text:      var(--gov-cream);
+  --text-dim:  rgba(240, 230, 208, 0.6);
+  --text-mute: rgba(240, 230, 208, 0.35);
+  --green:     var(--gov-light);
+  --mono:      'Courier New', monospace;
+}
+
+body {
+  font-family: 'ZCOOL KuaiLe', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.8;
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(26,61,40,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(15,31,20,0.8) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, rgba(42,90,63,0.15) 0%, transparent 70%),
+    radial-gradient(circle at 80% 20%, rgba(201,162,39,0.08) 0%, transparent 30%),
+    linear-gradient(135deg, transparent 48%, rgba(201,162,39,0.03) 49%, rgba(201,162,39,0.03) 51%, transparent 52%),
+    linear-gradient(45deg, transparent 48%, rgba(26,61,40,0.4) 49%, rgba(26,61,40,0.4) 51%, transparent 52%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 120px 120px, 80px 80px;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(201,162,39,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,162,39,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 10%; right: 5%;
+  width: 400px; height: 400px;
+  border: 1px solid rgba(201,162,39,0.08);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ===== 顶部导航 ===== */
+#intranet-header {
+  background: linear-gradient(90deg, var(--gov-deep) 0%, var(--gov-mid) 50%, var(--gov-deep) 100%);
+  border-bottom: 3px solid var(--gov-gold);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+#intranet-header::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gov-amber), transparent);
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.logo-wrap img {
+  width: 38px; height: 38px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.logo-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--gov-cream);
+  letter-spacing: 4px;
+  text-shadow: 0 2px 12px rgba(201,162,39,0.4);
+}
+
+.logo-sep {
+  width: 1px; height: 26px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+nav.intranet-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: rgba(240,230,208,0.7);
+  border-radius: 2px;
+  letter-spacing: 1px;
+  transition: all 0.25s;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: rgba(201,162,39,0.1);
+  color: var(--gov-amber);
+  border-color: rgba(201,162,39,0.3);
+}
+
+.nav-link.active {
+  background: rgba(201,162,39,0.15);
+  color: var(--gov-gold);
+  border-color: var(--gov-gold);
+  box-shadow: 0 0 16px rgba(201,162,39,0.2);
+}
+
+.header-badge {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--green);
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.online-dot {
+  width: 8px; height: 8px;
+  background: var(--gov-light);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(58,122,82,0.8);
+  animation: pulse 2s infinite;
+  border: 1px solid rgba(240,230,208,0.3);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.1); }
+}
+
+/* ===== 主内容 ===== */
+#intranet-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 32px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(201,162,39,0.2);
+}
+
+.page-header h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--accent2);
+  letter-spacing: 2px;
+}
+
+.back-btn {
+  font-size: 13px;
+  color: var(--text-dim);
+  padding: 6px 14px;
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 2px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: rgba(201,162,39,0.1);
+  color: var(--accent);
+  border-color: rgba(201,162,39,0.4);
+}
+
+/* ===== 通用内容区 ===== */
+.org-section {
+  background: linear-gradient(180deg, rgba(26,61,40,0.25) 0%, rgba(15,31,20,0.4) 100%);
+  border: 1px solid rgba(201,162,39,0.15);
+  border-radius: 2px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.org-header {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--accent2);
+  letter-spacing: 2px;
+  margin: 28px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(201,162,39,0.15);
+}
+
+.org-header:first-child {
+  margin-top: 0;
+}
+
+/* ===== 表格样式 ===== */
+.org-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.org-table th,
+.org-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(201,162,39,0.1);
+}
+
+.org-table th {
+  background: rgba(201,162,39,0.08);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+.org-table td {
+  color: rgba(240,230,208,0.85);
+}
+
+.org-table tr:hover td {
+  background: rgba(201,162,39,0.03);
+}
+
+.org-table .no {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.org-table .name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.org-table .name.blank {
+  color: var(--text-mute);
+  font-style: italic;
+}
+
+.org-table .role {
+  color: var(--text-dim);
+}
+
+.org-table .role.blank {
+  color: var(--text-mute);
+}
+
+/* ===== 状态标签 ===== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+.status-badge.online {
+  background: rgba(93,184,112,0.15);
+  color: #5db870;
+}
+
+.status-badge.online .dot {
+  background: #5db870;
+  box-shadow: 0 0 6px #5db870;
+}
+
+.status-badge.partial {
+  background: rgba(201,162,39,0.15);
+  color: #c9a227;
+}
+
+.status-badge.partial .dot {
+  background: #c9a227;
+  box-shadow: 0 0 6px #c9a227;
+}
+
+.status-badge.pending {
+  background: rgba(240,230,208,0.08);
+  color: var(--text-dim);
+}
+
+.status-badge.pending .dot {
+  background: var(--text-dim);
+}
+
+.row-000 {
+  background: rgba(201,162,39,0.05);
+}
+
+/* ===== 页脚 ===== */
+#intranet-footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 11px;
+  color: var(--text-mute);
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  border-top: 1px solid rgba(201,162,39,0.1);
+  margin-top: 40px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 900px) {
+  #intranet-header {
+    padding: 0 16px;
+    gap: 16px;
+  }
+
+  nav.intranet-nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-link {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  #intranet-main {
+    padding: 20px 16px 40px;
+  }
+
+  .org-section {
+    padding: 20px;
+  }
+}

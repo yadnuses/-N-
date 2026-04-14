@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>村长之谜 - 调查中心 - 耘雀内网</title>
+  <link rel="stylesheet" href="css/intranet-pages.css">
+  <style>
+    /* 谜题页面专用样式 */
+    .puzzle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(201,162,39,0.2);
+    }
+
+    .puzzle-header h1 {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--accent2);
+      letter-spacing: 2px;
+    }
+
+    .puzzle-nav {
+      display: flex;
+      gap: 12px;
+    }
+
+    .puzzle-nav a {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 13px;
+      transition: all 0.25s;
+    }
+
+    .puzzle-nav a:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+    }
+
+    /* 谜题目标 */
+    .puzzle-goal {
+      background: linear-gradient(135deg, rgba(201,162,39,0.1) 0%, rgba(15,31,20,0.3) 100%);
+      border: 1px solid rgba(201,162,39,0.25);
+      border-left: 4px solid var(--accent);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+
+    .puzzle-goal-title {
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .puzzle-goal-content {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    /* 线索列表 */
+    .clues-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      color: var(--accent2);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201,162,39,0.15);
+    }
+
+    .clue-item {
+      background: linear-gradient(135deg, rgba(26,61,40,0.25) 0%, rgba(15,31,20,0.4) 100%);
+      border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    .clue-item:hover {
+      border-color: rgba(201,162,39,0.3);
+    }
+
+    .clue-item.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .clue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .clue-id {
+      font-size: 12px;
+      color: var(--accent);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    .clue-status {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .clue-status.unlocked {
+      background: rgba(93,184,112,0.15);
+      color: #5db870;
+      border: 1px solid rgba(93,184,112,0.3);
+    }
+
+    .clue-status.locked {
+      background: rgba(240,230,208,0.08);
+      color: var(--text-mute);
+      border: 1px solid rgba(240,230,208,0.15);
+    }
+
+    .clue-name {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .clue-source {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      margin-bottom: 12px;
+    }
+
+    .clue-content {
+      font-size: 14px;
+      color: rgba(240,230,208,0.85);
+      line-height: 1.8;
+      padding: 16px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 2px;
+    }
+
+    .clue-unlock-hint {
+      font-size: 12px;
+      color: var(--accent);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* 验证关卡 */
+    .validation-section {
+      background: linear-gradient(135deg, rgba(26,61,40,0.4) 0%, rgba(15,31,20,0.5) 100%);
+      border: 2px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 28px;
+    }
+
+    .validation-section.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .validation-title {
+      font-size: 18px;
+      color: var(--accent2);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+    }
+
+    .clue-review {
+      background: rgba(0,0,0,0.2);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .clue-review-title {
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .clue-review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .clue-review-item {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 8px 12px;
+      background: rgba(201,162,39,0.08);
+      border-radius: 2px;
+      border-left: 2px solid var(--accent);
+    }
+
+    .clue-review-item.missing {
+      opacity: 0.5;
+      border-left-color: var(--text-mute);
+    }
+
+    .validation-question {
+      font-size: 15px;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .validation-input-group {
+      display: flex;
+      gap: 12px;
+      max-width: 500px;
+      margin: 0 auto 16px;
+    }
+
+    .validation-input-group input {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 2px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      text-align: center;
+    }
+
+    .validation-input-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(201,162,39,0.2);
+    }
+
+    .validation-input-group button {
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      padding: 14px 32px;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .validation-input-group button:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+      box-shadow: 0 0 16px rgba(201,162,39,0.2);
+    }
+
+    .validation-feedback {
+      text-align: center;
+      padding: 16px;
+      border-radius: 4px;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .validation-feedback.success {
+      background: rgba(93,184,112,0.15);
+      border: 1px solid rgba(93,184,112,0.3);
+      color: #5db870;
+    }
+
+    .validation-feedback.error {
+      background: rgba(192,57,43,0.15);
+      border: 1px solid rgba(192,57,43,0.3);
+      color: #e74c3c;
+    }
+
+    .validation-feedback.partial {
+      background: rgba(201,162,39,0.15);
+      border: 1px solid rgba(201,162,39,0.3);
+      color: var(--accent2);
+    }
+
+    .validation-hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* 已解决状态 */
+    .solved-banner {
+      background: linear-gradient(135deg, rgba(93,184,112,0.2) 0%, rgba(58,122,82,0.3) 100%);
+      border: 2px solid rgba(93,184,112,0.4);
+      border-radius: 4px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .solved-banner h3 {
+      font-size: 20px;
+      color: #5db870;
+      margin-bottom: 12px;
+    }
+
+    .solved-banner p {
+      font-size: 14px;
+      color: rgba(240,230,208,0.8);
+      line-height: 1.8;
+    }
+
+    .next-puzzle-btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, rgba(93,184,112,0.3), rgba(58,122,82,0.4));
+      border: 1px solid #5db870;
+      border-radius: 2px;
+      color: #5db870;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .next-puzzle-btn:hover {
+      background: linear-gradient(135deg, rgba(93,184,112,0.4), rgba(58,122,82,0.5));
+      box-shadow: 0 0 16px rgba(93,184,112,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header id="intranet-header">
+    <div class="logo-wrap">
+      <img src="images/yunque-logo.png" alt="耘雀">
+      <span class="logo-name">耘雀内网</span>
+    </div>
+    <nav class="intranet-nav">
+      <a href="intranet.html" class="nav-link">首页</a>
+      <a href="about.html" class="nav-link">关于我们</a>
+      <a href="overview.html" class="nav-link">村庄概况</a>
+      <a href="map.html" class="nav-link">村庄地图</a>
+      <a href="news.html" class="nav-link">村庄动态</a>
+      <a href="logs.html" class="nav-link">工作日志</a>
+      <a href="investigation.html" class="nav-link active">调查中心</a>
+    </nav>
+    <div class="header-badge">
+      <span class="online-dot"></span>
+      NO.000 · 已连接
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main id="intranet-main">
+    <div class="puzzle-header">
+      <h1>📍 村长之谜</h1>
+      <div class="puzzle-nav">
+        <a href="investigation.html">← 返回调查中心</a>
+      </div>
+    </div>
+
+    <!-- 已解决横幅（初始隐藏） -->
+    <div class="solved-banner" id="solved-banner" style="display: none;">
+      <h3>✓ 验证通过</h3>
+      <p>你理解了村长与村门石老人的关系。<br>村长不是嫌疑人，而是循环的受害者。</p>
+      <button class="next-puzzle-btn" onclick="location.href='investigation.html'">返回调查中心</button>
+    </div>
+
+    <!-- 谜题目标 -->
+    <div class="puzzle-goal">
+      <div class="puzzle-goal-title">▌ 谜题目标</div>
+      <div class="puzzle-goal-content">
+        理解村长与村门石老人的关系，确认村长不是嫌疑人。
+      </div>
+    </div>
+
+    <!-- 线索列表 -->
+    <div class="clues-section">
+      <div class="section-title">已收集线索</div>
+
+      <!-- 线索 1-A -->
+      <div class="clue-item" id="clue-1a">
+        <div class="clue-header">
+          <span class="clue-id">线索 1-A</span>
+          <span class="clue-status unlocked">已获得</span>
+        </div>
+        <div class="clue-name">村长的执念</div>
+        <div class="clue-source">来源：对讲机记录</div>
+        <div class="clue-content">
+          村长念叨"阿云"，拿着旧照片哭泣。<br><br>
+          他说："阿云，爹等你等得好苦……"
+        </div>
+      </div>
+
+      <!-- 线索 1-B -->
+      <div class="clue-item locked" id="clue-1b">
+        <div class="clue-header">
+          <span class="clue-id">线索 1-B</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">村门石等待者</div>
+        <div class="clue-source">来源：工作日志 NO.003</div>
+        <div class="clue-content" style="display: none;">
+          发现一个奇怪现象：村长每天傍晚都会去村口"巡视"，但他从不靠近村门石。<br><br>
+          而那个坐在村门石旁等待的老人，只在村长离开后出现。<br><br>
+          我连续观察了7天，<strong>两人从未同时出现过</strong>。
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"村门石"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 1-C -->
+      <div class="clue-item locked" id="clue-1c">
+        <div class="clue-header">
+          <span class="clue-id">线索 1-C</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">时间异常照片</div>
+        <div class="clue-source">来源：档案库历史记录</div>
+        <div class="clue-content" style="display: none;">
+          档案照片 #1984-032<br>
+          拍摄日期：1984年3月3日<br>
+          标注：第一届三月三凤凰归巢仪式<br><br>
+          注意：照片显示村门石旁有一老人身影，但该老人在村民名单中无记录。<br><br>
+          <strong>AI分析结果：</strong><br>
+          对比1984年照片 vs 当前监控截图：<br>
+          - 人物轮廓匹配度：<strong>91.7%</strong><br>
+          - 衣着特征：相似的深蓝色畲族服饰<br>
+          - <strong>异常：该人物在41年间未见明显衰老</strong>
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"1984 村门石"解锁此线索
+        </div>
+      </div>
+    </div>
+
+    <!-- 验证关卡 -->
+    <div class="validation-section locked" id="validation-section">
+      <div class="validation-title">📋 验证关卡</div>
+
+      <div class="clue-review">
+        <div class="clue-review-title">【线索回顾】</div>
+        <div class="clue-review-list" id="clue-review-list">
+          <div class="clue-review-item" id="review-1a">线索1-A：村长执念于失踪的孩子"阿云"</div>
+          <div class="clue-review-item missing" id="review-1b">线索1-B：？？？（未收集）</div>
+          <div class="clue-review-item missing" id="review-1c">线索1-C：？？？（未收集）</div>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        基于以上线索，村长与村门石老人的关系是：
+      </div>
+
+      <div class="validation-input-group">
+        <input type="text" id="validation-answer" placeholder="输入结论关键词..." autocomplete="off">
+        <button onclick="submitAnswer()">提交验证</button>
+      </div>
+
+      <div class="validation-hint">
+        提示：尝试分析"为什么41年未见衰老""为什么两人从不同时出现"
+      </div>
+
+      <div id="validation-feedback"></div>
+    </div>
+  </main>
+
+  <footer id="intranet-footer">
+    YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
+  </footer>
+
+  <script>
+    // 线索数据
+    var clueData = {
+      '1-A': {
+        name: '村长的执念',
+        content: '村长执念于失踪的孩子"阿云"',
+        unlocked: true
+      },
+      '1-B': {
+        name: '村门石等待者',
+        content: '村长与村门石老人从未同时出现',
+        unlocked: false,
+        unlockKeyword: '村门石'
+      },
+      '1-C': {
+        name: '时间异常照片',
+        content: '1984年照片显示老人已存在，且41年未衰老',
+        unlocked: false,
+        unlockKeyword: '1984'
+      }
+    };
+
+    // 正确答案
+    var correctAnswers = ['同一人', '人格分裂', '时间循环', '村长即老人', '村长就是老人'];
+
+    // 错误反馈
+    var wrongFeedback = {
+      '村长是嫌疑人': '❌ 验证失败<br>证据矛盾：村长离开村子后，时间状态未改变<br>提示：请重新审视"带离实验"的结果',
+      '老人是幽灵': '⚠️ 部分正确，但不完整<br>老人确实存在物理实体（照片可拍摄）<br>提示：考虑"同一人在不同地点"的可能性',
+      '村长有双胞胎': '❌ 验证失败<br>档案中无双胞胎记录<br>且无法解释"41年不衰老"',
+      '幽灵': '⚠️ 部分正确，但不完整<br>提示：考虑物理实体的可能性',
+      '嫌疑人': '❌ 验证失败<br>证据不足，请收集更多线索'
+    };
+
+    // 初始化页面
+    function initPage() {
+      loadClueStatus();
+      updateClueDisplay();
+      checkValidationUnlock();
+    }
+
+    // 加载线索状态
+    function loadClueStatus() {
+      var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      var clues = saveData.clues || {};
+      var chiefClues = clues.chief || {};
+
+      // 更新线索解锁状态
+      for (var clueId in chiefClues) {
+        if (chiefClues.hasOwnProperty(clueId) && clueData[clueId]) {
+          clueData[clueId].unlocked = chiefClues[clueId];
+        }
+      }
+    }
+
+    // 更新线索显示
+    function updateClueDisplay() {
+      var unlockedCount = 0;
+
+      for (var clueId in clueData) {
+        if (!clueData.hasOwnProperty(clueId)) continue;
+        var data = clueData[clueId];
+        var element = document.getElementById('clue-' + clueId.toLowerCase());
+        var reviewElement = document.getElementById('review-' + clueId.toLowerCase());
+
+        if (data.unlocked) {
+          unlockedCount++;
+          element.classList.remove('locked');
+          element.querySelector('.clue-status').textContent = '已获得';
+          element.querySelector('.clue-status').classList.remove('locked');
+          element.querySelector('.clue-status').classList.add('unlocked');
+          element.querySelector('.clue-content').style.display = 'block';
+          var hint = element.querySelector('.clue-unlock-hint');
+          if (hint) hint.style.display = 'none';
+
+          // 更新验证区域的线索回顾
+          if (reviewElement) {
+            reviewElement.classList.remove('missing');
+            reviewElement.textContent = '线索' + clueId + '：' + data.content;
+          }
+        }
+      }
+
+      return unlockedCount;
+    }
+
+    // 检查是否解锁验证关卡
+    function checkValidationUnlock() {
+      var unlockedCount = updateClueDisplay();
+      var validationSection = document.getElementById('validation-section');
+
+      if (unlockedCount >= 3) {
+        validationSection.classList.remove('locked');
+      }
+    }
+
+    // 提交答案
+    function submitAnswer() {
+      var input = document.getElementById('validation-answer');
+      var answer = input.value.trim();
+      var feedbackDiv = document.getElementById('validation-feedback');
+
+      if (!answer) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">请输入答案</div>';
+        return;
+      }
+
+      // 检查正确答案
+      var isCorrect = false;
+      for (var ci = 0; ci < correctAnswers.length; ci++) {
+        var correct = correctAnswers[ci];
+        if (answer.toLowerCase().indexOf(correct.toLowerCase()) !== -1 ||
+            correct.toLowerCase().indexOf(answer.toLowerCase()) !== -1) {
+          isCorrect = true;
+          break;
+        }
+      }
+
+      if (isCorrect) {
+        // 验证成功
+        feedbackDiv.innerHTML = '<div class="validation-feedback success">' +
+          '<strong>✓ 验证通过</strong><br><br>' +
+          '<strong>你的结论：</strong>村长与村门石老人是同一人，因时间循环产生人格分裂。<br><br>' +
+          '<strong>推理过程：</strong><br>' +
+          '1. 村长执念于孩子"阿云" → 心理创伤<br>' +
+          '2. 村内身份：村长（管理者）<br>' +
+          '3. 村门石身份：等待者（父亲）<br>' +
+          '4. 时间循环导致两种身份无法整合<br>' +
+          '5. 每次循环，村长重新经历"失去-等待"的痛苦<br><br>' +
+          '<strong>结论：</strong>村长不是嫌疑人，而是<strong>循环的受害者</strong>。<br><br>' +
+          '【奖励】解锁谜题2：佛儿岩的秘密' +
+        '</div>';
+
+        // 保存完成状态
+        var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+        saveData.puzzlesSolved = saveData.puzzlesSolved || {};
+        saveData.puzzlesSolved.chief = true;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+
+        // 显示解决横幅
+        document.getElementById('solved-banner').style.display = 'block';
+
+        // 隐藏输入区域
+        document.querySelector('.validation-input-group').style.display = 'none';
+        document.querySelector('.validation-hint').style.display = 'none';
+
+      } else {
+        // 检查是否有特定的错误反馈
+        var feedback = null;
+        for (var wrongAnswer in wrongFeedback) {
+          if (!wrongFeedback.hasOwnProperty(wrongAnswer)) continue;
+          if (answer.toLowerCase().indexOf(wrongAnswer.toLowerCase()) !== -1) {
+            feedback = wrongFeedback[wrongAnswer];
+            break;
+          }
+        }
+
+        if (!feedback) {
+          feedback = '❌ 验证失败<br>证据不足，请重新审视收集到的线索。<br>提示：尝试分析"为什么41年未见衰老"';
+        }
+
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">' + feedback + '</div>';
+      }
+    }
+
+    // 监听来自搜索的解锁消息
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'yunchu_save') {
+        initPage();
+      }
+    });
+
+    // 页面加载时初始化
+    initPage();
+
+    // 回车提交
+    document.getElementById('validation-answer').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        submitAnswer();
+      }
+    });
+  </script>
+</body>
+</html>

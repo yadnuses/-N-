@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试存档数据</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #1a1a1a;
+      color: #5db870;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 { color: #c9a227; }
+    .data { background: #0a0a0a; padding: 15px; border-radius: 4px; margin: 10px 0; }
+    button {
+      background: #c9a227;
+      color: #1a1a1a;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>存档数据测试</h1>
+  <div class="data" id="output">加载中...</div>
+  <button onclick="setProgress(2)">设置进度为2</button>
+  <button onclick="setProgress(5)">设置进度为5</button>
+  <button onclick="clearSave()">清除存档</button>
+  <button onclick="location.href='about.html'">跳转到About</button>
+
+  <script>
+    function loadSave() {
+      try {
+        return JSON.parse(localStorage.getItem('yunchu_save')) || {};
+      } catch(e) { return {}; }
+    }
+
+    function showData() {
+      var save = loadSave();
+      document.getElementById('output').innerHTML =
+        '<strong>当前存档：</strong><br>' +
+        'chatProgress: ' + (save.chatProgress || 0) + '<br>' +
+        'aboutTriggered: ' + (save.aboutTriggered || false) + '<br>' +
+        'mapVisited: ' + (save.mapVisited || false) + '<br>' +
+        '<br><strong>完整数据：</strong><br>' +
+        '<pre>' + JSON.stringify(save, null, 2) + '</pre>';
+    }
+
+    function setProgress(n) {
+      var save = loadSave();
+      save.chatProgress = n;
+      localStorage.setItem('yunchu_save', JSON.stringify(save));
+      showData();
+      alert('进度已设置为 ' + n);
+    }
+
+    function clearSave() {
+      localStorage.removeItem('yunchu_save');
+      showData();
+      alert('存档已清除');
+    }
+
+    showData();
+  </script>
+</body>
+</html>

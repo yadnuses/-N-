@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>村庄地图 - 耘雀内网 · 云处村</title>
+  <link rel="stylesheet" href="css/intranet-pages.css">
+  <style>
+    /* 地图专用样式 */
+    #map-scroll-wrap {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(26,61,40,0.3) 0%, rgba(15,31,20,0.5) 100%);
+      border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #map-scroll-inner {
+      position: relative;
+      width: 2027px;
+      height: 1351px;
+      transform-origin: center center;
+    }
+    #map-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    #map-img {
+      width: 2027px;
+      height: 1351px;
+      display: block;
+    }
+    .map-hotspot {
+      position: absolute;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .map-hotspot:hover {
+      background: rgba(201,162,39,0.2);
+      box-shadow: 0 0 20px rgba(201,162,39,0.4);
+    }
+    .hs-btn {
+      position: absolute;
+      background: linear-gradient(135deg, rgba(26,61,40,0.9), rgba(15,31,20,0.95));
+      border: 1px solid rgba(201,162,39,0.4);
+      color: #c9a227;
+      padding: 6px 12px;
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      pointer-events: none;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+    }
+    #map-popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #map-popup.active {
+      display: flex;
+    }
+    #map-popup-inner {
+      background: linear-gradient(135deg, rgba(26,61,40,0.95) 0%, rgba(15,31,20,0.98) 100%);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 24px;
+      max-width: 400px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    #map-popup-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #c9a227;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(201,162,39,0.2);
+      padding-bottom: 8px;
+    }
+    #map-popup-desc {
+      font-size: 13px;
+      color: rgba(240,230,208,0.8);
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header id="intranet-header">
+    <div class="logo-wrap">
+      <img src="images/yunque-logo.png" alt="耘雀">
+      <span class="logo-name">耘雀内网</span>
+      <span class="logo-sep"></span>
+    </div>
+    <nav class="intranet-nav">
+      <a href="intranet.html" class="nav-link">首页</a>
+      <a href="about.html" class="nav-link">关于我们</a>
+      <a href="overview.html" class="nav-link">村庄概况</a>
+      <a href="map.html" class="nav-link active">村庄地图</a>
+      <a href="news.html" class="nav-link">村庄动态</a>
+      <a href="logs.html" class="nav-link">工作日志</a>
+      <a href="honors.html" class="nav-link">优秀员工</a>
+    </nav>
+    <div class="header-badge">
+      <span class="online-dot"></span>
+      <span>NO.000 在线</span>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main id="intranet-main">
+    <div class="page-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:18px;color:var(--accent);">📍</span>
+        <span style="font-size:16px;font-weight:bold;color:var(--accent2);letter-spacing:2px;">云处村地图</span>
+      </div>
+      <a href="intranet.html" class="back-btn">← 返回内网主页</a>
+    </div>
+
+    <!-- 书卷展开容器 -->
+    <div id="map-scroll-wrap">
+      <div id="map-scroll-inner">
+        <div id="map-container">
+          <img src="images/map.png" alt="云处村地图" id="map-img">
+
+          <!-- 热点覆盖层，白色像素扫描精确定位原图标签 -->
+          <!-- 观景台: 原图(456,64)~(624,136) -->
+          <div class="map-hotspot" style="left:22.5%;top:4.7%;width:8.3%;height:5.3%;" onclick="showMapInfo('观景台')"></div>
+          <!-- 佛儿岩: 原图(1077,226)~(1274,310) -->
+          <div class="map-hotspot" style="left:53.1%;top:16.7%;width:9.7%;height:6.2%;" onclick="showMapInfo('佛儿岩')"></div>
+          <!-- 童话美术馆: 原图(615,488)~(875,566) -->
+          <div class="map-hotspot" style="left:30.3%;top:36.1%;width:12.8%;height:5.8%;" onclick="showMapInfo('童话美术馆')"></div>
+          <!-- 畲族民俗文化研究中心: 原图(1519,536)~(1993,614) -->
+          <div class="map-hotspot" style="left:74.9%;top:39.7%;width:23.4%;height:5.8%;" onclick="showMapInfo('畲族民俗文化研究中心')"></div>
+          <!-- 古戏台: 原图(526,1072)~(722,1156) -->
+          <div class="map-hotspot" style="left:25.9%;top:79.3%;width:9.7%;height:6.2%;" onclick="showMapInfo('古戏台')"></div>
+          <!-- 山哈哈乐园: 原图(1629,962)~(1913,1046) -->
+          <div class="map-hotspot" style="left:80.4%;top:71.2%;width:14.0%;height:6.2%;" onclick="showMapInfo('山哈哈乐园')"></div>
+          <!-- 同心广场: 原图(1125,1188)~(1386,1278) -->
+          <div class="map-hotspot" style="left:55.5%;top:87.9%;width:12.9%;height:6.7%;" onclick="showMapInfo('同心广场')"></div>
+          <!-- 村门石：仿造标签，左侧路口入村处 -->
+          <div class="map-hotspot fabricated" style="left:1%;top:48%;" onclick="showMapInfo('村门石')">
+            <div class="hs-btn">村门石</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹出简介框 -->
+    <div id="map-popup" onclick="hideMapPopup()">
+      <div id="map-popup-inner" onclick="event.stopPropagation()">
+        <div id="map-popup-title"></div>
+        <div id="map-popup-desc"></div>
+        <div style="text-align:right;margin-top:12px;">
+          <span onclick="hideMapPopup()" style="font-size:12px;color:var(--text-dim);cursor:pointer;font-family:var(--mono);">关闭 ×</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="intranet-footer">
+    YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
+  </footer>
+
+  <script>
+    // 自动缩放地图以适应容器
+    function resizeMap() {
+      var wrap = document.getElementById('map-scroll-wrap');
+      var inner = document.getElementById('map-scroll-inner');
+      var wrapWidth = wrap.clientWidth;
+      var wrapHeight = wrap.clientHeight;
+      var mapWidth = 2027;
+      var mapHeight = 1351;
+      var scale = Math.min(wrapWidth / mapWidth, wrapHeight / mapHeight);
+      inner.style.transform = 'scale(' + scale + ')';
+    }
+    window.addEventListener('load', resizeMap);
+    window.addEventListener('resize', resizeMap);
+
+    // 地图信息数据
+    var mapInfoData = {
+      '观景台': '位于村庄最高处，可俯瞰整个云处村全景。这里是观测村庄时空波动的最佳位置。',
+      '佛儿岩': '村后的一处岩石地貌，据说有神秘的力量。岩石上刻有古老的符号，与同心广场的图腾有某种联系。',
+      '童话美术馆': '展示着村里孩子们的画作，也是儿童文学活动的主要场所。',
+      '畲族民俗文化研究中心': '耘雀的基地，位于村庄深处。这里是所有观测者的集结地和指挥中心。',
+      '古戏台': '每逢节日，村民们会在这里表演畲族传统戏曲。三月三歌会的主要举办地。',
+      '山哈哈乐园': '村里的儿童乐园，有很多木制玩具。是小坏蛋最喜欢的地方之一。',
+      '同心广场': '广场正中是黑白相间的圆形图案，外围有一些奇怪的符号。这里是村庄的核心地带。',
+      '村门石': '村口的那块破旧石碑，上面模糊地刻着"云处村"三个字。一个神秘的老人常年在此等待。'
+    };
+
+    function showMapInfo(name) {
+      document.getElementById('map-popup-title').textContent = name;
+      document.getElementById('map-popup-desc').textContent = mapInfoData[name] || '暂无介绍';
+      document.getElementById('map-popup').classList.add('active');
+    }
+
+    function hideMapPopup() {
+      document.getElementById('map-popup').classList.remove('active');
+    }
+
+    // 地图页面消息提示逻辑
+    function getSave() {
+      try {
+        return JSON.parse(localStorage.getItem('yunchu_save')) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function writeSave(key, value) {
+      var save = getSave();
+      save[key] = value;
+      localStorage.setItem('yunchu_save', JSON.stringify(save));
+    }
+
+    // 页面加载时检查是否需要触发消息
+    window.addEventListener('load', function() {
+      var save = getSave();
+      // 进度 >= 7 且未访问过地图时，触发曾佳秋消息
+      if (save.chatProgress >= 7 && !save.mapVisited) {
+        writeSave('mapVisited', true);
+        // 延迟10秒后显示返回提示
+        setTimeout(function() {
+          // 显示返回聊天提示
+          var hint = document.createElement('div');
+          hint.style.cssText = 'position:fixed;top:80px;right:20px;background:rgba(26,61,40,0.95);border:1px solid rgba(201,162,39,0.4);border-radius:4px;padding:14px 20px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:1000;color:var(--accent);font-size:12px;font-family:var(--mono);cursor:pointer;';
+          hint.innerHTML = '<span style="width:8px;height:8px;background:#e74c3c;border-radius:50%;display:inline-block;margin-right:8px;animation:pulse 2s infinite;"></span>即时消息 · 来自 NO.003 曾佳秋<br><span style="font-size:11px;color:var(--text-dim);margin-left:16px;">点击返回内网查看</span>';
+          hint.onclick = function() {
+            window.location.href = 'intranet.html?chat=1';
+          };
+          document.body.appendChild(hint);
+        }, 10000);
+      }
+    });
+  </script>
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+  </style>
+</body>
+</html>

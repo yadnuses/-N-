@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作日志 - 耘雀内网 · 云处村</title>
+  <link rel="stylesheet" href="css/intranet-pages.css">
+  <style>
+    /* 工作日志专用样式 */
+    #journal-lock {
+      max-width: 400px;
+      margin: 80px auto;
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(26,61,40,0.4) 0%, rgba(15,31,20,0.6) 100%);
+      border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 4px;
+    }
+    .jlock-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .jlock-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--accent2);
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .jlock-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+    .jlock-input-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .jlock-input {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 2px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 14px;
+      width: 180px;
+      font-family: var(--mono);
+    }
+    .jlock-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .jlock-btn {
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      padding: 10px 20px;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    .jlock-btn:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+    }
+    .jlock-tip {
+      font-size: 12px;
+      color: #c0392b;
+      min-height: 20px;
+    }
+    .journal-layout {
+      display: flex;
+      gap: 20px;
+      height: calc(100vh - 200px);
+    }
+    .journal-sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: rgba(15,31,20,0.5);
+      border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 4px;
+      overflow-y: auto;
+    }
+    .journal-member {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 1px solid rgba(201,162,39,0.1);
+    }
+    .journal-member:hover,
+    .journal-member.active {
+      background: rgba(201,162,39,0.1);
+    }
+    .jm-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a6a4a, #2a5a3f);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--accent);
+      font-family: var(--mono);
+    }
+    .jm-avatar.pan {
+      background: linear-gradient(135deg, #2a4a3a, #1a3a2a);
+    }
+    .jm-avatar.zeng {
+      background: linear-gradient(135deg, #1a4030, #0a3020);
+    }
+    .jm-info {
+      flex: 1;
+    }
+    .jm-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .jm-date {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+    .journal-body {
+      flex: 1;
+      background: rgba(15,31,20,0.3);
+      border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 4px;
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .jlog-id {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .jlog-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--accent2);
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+    .jlog-content {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 2;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header id="intranet-header">
+    <div class="logo-wrap">
+      <img src="images/yunque-logo.png" alt="耘雀">
+      <span class="logo-name">耘雀内网</span>
+      <span class="logo-sep"></span>
+    </div>
+    <nav class="intranet-nav">
+      <a href="intranet.html" class="nav-link">首页</a>
+      <a href="about.html" class="nav-link">关于我们</a>
+      <a href="overview.html" class="nav-link">村庄概况</a>
+      <a href="map.html" class="nav-link">村庄地图</a>
+      <a href="news.html" class="nav-link">村庄动态</a>
+      <a href="logs.html" class="nav-link active">工作日志</a>
+      <a href="honors.html" class="nav-link">优秀员工</a>
+    </nav>
+    <div class="header-badge">
+      <span class="online-dot"></span>
+      <span>NO.000 在线</span>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main id="intranet-main">
+    <div class="page-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:18px;">📋</span>
+        <span style="font-size:16px;font-weight:bold;color:var(--accent2);letter-spacing:2px;">工作日志</span>
+      </div>
+      <a href="intranet.html" class="back-btn">← 返回内网主页</a>
+    </div>
+
+    <!-- 密码验证区（未解锁时显示） -->
+    <div id="journal-lock">
+      <div class="jlock-icon">🔒</div>
+      <div class="jlock-title">访问受限</div>
+      <div class="jlock-desc">此档案需要成员认证码方可访问</div>
+      <div class="jlock-input-row">
+        <input type="password" id="journal-pwd" class="jlock-input" placeholder="输入认证码..." autocomplete="off">
+        <button class="jlock-btn" onclick="checkJournalPwd()">验证</button>
+      </div>
+      <div id="journal-pwd-tip" class="jlock-tip"></div>
+    </div>
+
+    <!-- 日志内容区（解锁后显示） -->
+    <div id="journal-content" style="display:none;">
+      <div class="journal-layout">
+        <!-- 左侧：成员列表 -->
+        <div class="journal-sidebar">
+          <div class="journal-member active" onclick="showJournal('001')" id="jm-001">
+            <div class="jm-avatar pan">001</div>
+            <div class="jm-info">
+              <div class="jm-name">潘安森</div>
+              <div class="jm-date">2020.3.3</div>
+            </div>
+          </div>
+          <div class="journal-member" onclick="showJournal('002')" id="jm-002">
+            <div class="jm-avatar" style="background:linear-gradient(135deg,#1a3040,#22506a);">002</div>
+            <div class="jm-info">
+              <div class="jm-name">丁莫洋</div>
+              <div class="jm-date">2022.3.3</div>
+            </div>
+          </div>
+          <div class="journal-member" onclick="showJournal('003')" id="jm-003">
+            <div class="jm-avatar zeng">003</div>
+            <div class="jm-info">
+              <div class="jm-name">曾佳秋</div>
+              <div class="jm-date">2025.3.3</div>
+            </div>
+          </div>
+          <div class="journal-member" onclick="showJournal('004')" id="jm-004">
+            <div class="jm-avatar" style="background:linear-gradient(135deg,#3a2820,#5a3828);color:#c8a080;">004</div>
+            <div class="jm-info">
+              <div class="jm-name">武家铭</div>
+              <div class="jm-date">2029.3.3</div>
+            </div>
+          </div>
+
+          <!-- 村民调查 -->
+          <div style="padding:10px 16px;font-size:11px;color:var(--text-dim);border-top:1px solid rgba(201,162,39,0.2);margin-top:8px;">
+            ▼ 村民调查
+          </div>
+          <div class="journal-member" onclick="showJournal('chief')" id="jm-chief">
+            <div class="jm-avatar" style="background:linear-gradient(135deg,#4a4030,#6a5040);color:#d4c4a0;">村</div>
+            <div class="jm-info">
+              <div class="jm-name">村长之谜</div>
+              <div class="jm-date">调查记录</div>
+            </div>
+          </div>
+          <div class="journal-member" onclick="showJournal('apo')" id="jm-apo">
+            <div class="jm-avatar" style="background:linear-gradient(135deg,#5a4050,#7a5068);color:#e0c8d0;">婆</div>
+            <div class="jm-info">
+              <div class="jm-name">凤英阿婆</div>
+              <div class="jm-date">调查记录</div>
+            </div>
+          </div>
+          <div class="journal-member" onclick="showJournal('smith')" id="jm-smith">
+            <div class="jm-avatar" style="background:linear-gradient(135deg,#303040,#404058);color:#a8a8c8;">匠</div>
+            <div class="jm-info">
+              <div class="jm-name">雷铁山</div>
+              <div class="jm-date">调查记录</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：日志正文 -->
+        <div class="journal-body" id="journal-body"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="intranet-footer">
+    YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
+  </footer>
+
+  <script>
+    // 日志数据
+    var journalData = {
+      '001': {
+        id: 'NO.001 · 工作日志',
+        title: '第一次观测',
+        content: '这是我第一次来到云处村。\n\n我发现这里的时间有问题——村民们的影子方向不一致，有些人的影子甚至会自己移动。\n\n我开始调查，发现每年农历的三月初三，时间都会重置。\n\n我创立了"耘雀"，希望能找到解决的办法。\n\n但我老了，我需要更多的"我"来帮忙。'
+      },
+      '002': {
+        id: 'NO.002 · 工作日志',
+        title: '加入',
+        content: '安森找到我的时候，我以为他在开玩笑。\n\n但当我亲眼看到那些会自己移动的影子时，我知道这是真的。\n\n我加入了耘雀，负责保护大家的安全。\n\n这里的时空乱流会产生一些……危险的东西。\n\n我必须确保每一个"我"都能安全完成任务。'
+      },
+      '003': {
+        id: 'NO.003 · 工作日志',
+        title: '来自未来的观测者',
+        content: '我来自比安森晚五年的时空。\n\n在我的时间线里，云处村已经消失了。\n\n我花了三年时间，才找到这个时空的入口。\n\n我加入耘雀，负责控制外界对这片区域的了解。\n\n同时，我也负责观察和联系不同时空的"我"。\n\n但最重要的是……我负责照顾小坏蛋。'
+      },
+      '004': {
+        id: 'NO.004 · 工作日志',
+        title: '唯一的幸存者',
+        content: '我来自一个失败的未来。\n\n在那个时间线里，我们没能拯救云处村。\n\n时间循环崩塌了，所有的灵魂都消散在了时间裂缝中。\n\n我是唯一的幸存者。\n\n通过某种方式，我回到了现在这个时间点。\n\n我的记忆大部分被封印了，但我记得一件事——\n\n无论如何，都要拯救那个孩子。'
+      },
+      'chief': {
+        id: '调查记录 · NO.003 曾佳秋',
+        title: '村长之谜',
+        content: '【线索1-A：村长的执念】\n\n对讲机记录显示：村长经常念叨"阿云"，拿着一张旧照片独自哭泣。照片中是一个小女孩。\n\n<img src="images/comic/chief-clue1a.png" style="max-width:100%;border-radius:4px;margin:12px 0;border:1px solid rgba(201,162,39,0.3);" alt="村长的执念">\n\n———\n\n【线索1-B：村门石等待者】\n\n发现一个奇怪现象：村长每天傍晚都会去村口"巡视"，但他从不靠近村门石。\n\n而那个坐在村门石旁等待的老人，只在村长离开后出现。\n\n我连续观察了7天，两人从未同时出现过。\n\n———\n\n【线索1-C：时间异常照片】\n\n档案库中找到一张1984年的村门石照片，显示那位老人已经存在。\n\n41年过去了，老人的外貌没有任何变化。'
+      },
+      'apo': {
+        id: '调查记录 · NO.001 潘安森',
+        title: '凤英阿婆',
+        content: '阿婆是村里最年长的老人。\n\n她知道很多关于云处村的古老传说。\n\n她说，很久以前，云处村曾经历过一场大灾难。是凤凰神显灵，拯救了村庄。\n\n从那以后，村民们就开始崇拜凤凰。\n\n但她从不提那场灾难是什么，也从不提凤凰神是如何显灵的。\n\n每次我们问起，她都会摇头说："那是不能说的秘密。"'
+      },
+      'smith': {
+        id: '调查记录 · NO.002 丁莫洋',
+        title: '雷铁山',
+        content: '雷铁山是村里的铁匠，沉默寡言，但手艺精湛。\n\n他打制的银器在周边村庄很有名。\n\n他有一个习惯——每年三月初三前，都会打制一把小银锁，但从不卖给任何人。\n\n当我问起时，他只是说："这是给一个重要的人准备的。"\n\n———\n\n【备注】\n雷铁山似乎知道一些关于村长时间循环的事情，但他从不主动提起。'
+      }
+    };
+
+    // 检查密码
+    function checkJournalPwd() {
+      var input = document.getElementById('journal-pwd');
+      var tip = document.getElementById('journal-pwd-tip');
+      if (input.value === 'YUNQUE-000') {
+        document.getElementById('journal-lock').style.display = 'none';
+        document.getElementById('journal-content').style.display = 'block';
+        showJournal('001');
+      } else {
+        tip.textContent = '认证码错误，请重试';
+        input.value = '';
+      }
+    }
+
+    // 显示日志
+    function showJournal(id) {
+      // 更新选中状态
+      document.querySelectorAll('.journal-member').forEach(function(el) {
+        el.classList.remove('active');
+      });
+      document.getElementById('jm-' + id).classList.add('active');
+
+      // 显示内容
+      var data = journalData[id];
+      var html = '<div class="jlog-id">' + data.id + '</div>' +
+                 '<div class="jlog-title">' + data.title + '</div>' +
+                 '<div class="jlog-content">' + data.content + '</div>';
+      document.getElementById('journal-body').innerHTML = html;
+    }
+
+    // 回车键提交
+    document.getElementById('journal-pwd').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        checkJournalPwd();
+      }
+    });
+  </script>
+</body>
+</html>

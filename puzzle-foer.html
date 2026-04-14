@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>佛儿岩的秘密 - 调查中心 - 耘雀内网</title>
+  <link rel="stylesheet" href="css/intranet-pages.css">
+  <style>
+    /* 谜题页面专用样式 */
+    .puzzle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(201,162,39,0.2);
+    }
+
+    .puzzle-header h1 {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--accent2);
+      letter-spacing: 2px;
+    }
+
+    .puzzle-nav {
+      display: flex;
+      gap: 12px;
+    }
+
+    .puzzle-nav a {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 13px;
+      transition: all 0.25s;
+    }
+
+    .puzzle-nav a:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+    }
+
+    .puzzle-goal {
+      background: linear-gradient(135deg, rgba(201,162,39,0.1) 0%, rgba(15,31,20,0.3) 100%);
+      border: 1px solid rgba(201,162,39,0.25);
+      border-left: 4px solid var(--accent);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+
+    .puzzle-goal-title {
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .puzzle-goal-content {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .clues-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      color: var(--accent2);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201,162,39,0.15);
+    }
+
+    .clue-item {
+      background: linear-gradient(135deg, rgba(26,61,40,0.25) 0%, rgba(15,31,20,0.4) 100%);
+      border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    .clue-item:hover {
+      border-color: rgba(201,162,39,0.3);
+    }
+
+    .clue-item.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .clue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .clue-id {
+      font-size: 12px;
+      color: var(--accent);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    .clue-status {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .clue-status.unlocked {
+      background: rgba(93,184,112,0.15);
+      color: #5db870;
+      border: 1px solid rgba(93,184,112,0.3);
+    }
+
+    .clue-status.locked {
+      background: rgba(240,230,208,0.08);
+      color: var(--text-mute);
+      border: 1px solid rgba(240,230,208,0.15);
+    }
+
+    .clue-name {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .clue-source {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      margin-bottom: 12px;
+    }
+
+    .clue-content {
+      font-size: 14px;
+      color: rgba(240,230,208,0.85);
+      line-height: 1.8;
+      padding: 16px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 2px;
+    }
+
+    .clue-unlock-hint {
+      font-size: 12px;
+      color: var(--accent);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* 图像对比工具样式 */
+    .image-compare-tool {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .image-compare-header {
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .image-compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .image-compare-item {
+      background: rgba(0,0,0,0.3);
+      border: 2px solid rgba(201,162,39,0.2);
+      border-radius: 4px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .image-compare-item:hover {
+      border-color: rgba(201,162,39,0.5);
+    }
+
+    .image-compare-item.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(201,162,39,0.2);
+    }
+
+    .image-compare-placeholder {
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(135deg, rgba(26,61,40,0.5), rgba(15,31,20,0.7));
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .image-compare-label {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .image-compare-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .compare-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-bottom: 16px;
+    }
+
+    .compare-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+      box-shadow: 0 0 16px rgba(201,162,39,0.2);
+    }
+
+    .compare-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .compare-result {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(93,184,112,0.3);
+      border-radius: 4px;
+      padding: 16px;
+      display: none;
+    }
+
+    .compare-result.show {
+      display: block;
+    }
+
+    .compare-result-title {
+      font-size: 14px;
+      color: #5db870;
+      margin-bottom: 12px;
+    }
+
+    .compare-result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(201,162,39,0.1);
+      font-size: 13px;
+    }
+
+    .compare-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .compare-result-label {
+      color: var(--text-dim);
+    }
+
+    .compare-result-value {
+      color: var(--text);
+    }
+
+    .compare-result-value.highlight {
+      color: var(--accent2);
+      font-weight: bold;
+    }
+
+    .compare-conclusion {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(201,162,39,0.2);
+      font-size: 14px;
+      color: var(--accent);
+      line-height: 1.8;
+    }
+
+    /* 验证关卡 */
+    .validation-section {
+      background: linear-gradient(135deg, rgba(26,61,40,0.4) 0%, rgba(15,31,20,0.5) 100%);
+      border: 2px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 28px;
+    }
+
+    .validation-section.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .validation-title {
+      font-size: 18px;
+      color: var(--accent2);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+    }
+
+    .clue-review {
+      background: rgba(0,0,0,0.2);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .clue-review-title {
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .clue-review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .clue-review-item {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 8px 12px;
+      background: rgba(201,162,39,0.08);
+      border-radius: 2px;
+      border-left: 2px solid var(--accent);
+    }
+
+    .clue-review-item.missing {
+      opacity: 0.5;
+      border-left-color: var(--text-mute);
+    }
+
+    .validation-question {
+      font-size: 15px;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.8;
+    }
+
+    .validation-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 500px;
+      margin: 0 auto 20px;
+    }
+
+    .validation-option {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .validation-option:hover {
+      border-color: rgba(201,162,39,0.5);
+      background: rgba(201,162,39,0.05);
+    }
+
+    .validation-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .validation-option label {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .validation-submit-btn {
+      display: block;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .validation-submit-btn:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+      box-shadow: 0 0 16px rgba(201,162,39,0.2);
+    }
+
+    .validation-feedback {
+      text-align: center;
+      padding: 16px;
+      border-radius: 4px;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .validation-feedback.success {
+      background: rgba(93,184,112,0.15);
+      border: 1px solid rgba(93,184,112,0.3);
+      color: #5db870;
+    }
+
+    .validation-feedback.error {
+      background: rgba(192,57,43,0.15);
+      border: 1px solid rgba(192,57,43,0.3);
+      color: #e74c3c;
+    }
+
+    .validation-feedback.partial {
+      background: rgba(201,162,39,0.15);
+      border: 1px solid rgba(201,162,39,0.3);
+      color: var(--accent2);
+    }
+
+    .validation-hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    .solved-banner {
+      background: linear-gradient(135deg, rgba(93,184,112,0.2) 0%, rgba(58,122,82,0.3) 100%);
+      border: 2px solid rgba(93,184,112,0.4);
+      border-radius: 4px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .solved-banner h3 {
+      font-size: 20px;
+      color: #5db870;
+      margin-bottom: 12px;
+    }
+
+    .solved-banner p {
+      font-size: 14px;
+      color: rgba(240,230,208,0.8);
+      line-height: 1.8;
+    }
+
+    .next-puzzle-btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, rgba(93,184,112,0.3), rgba(58,122,82,0.4));
+      border: 1px solid #5db870;
+      border-radius: 2px;
+      color: #5db870;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .next-puzzle-btn:hover {
+      background: linear-gradient(135deg, rgba(93,184,112,0.4), rgba(58,122,82,0.5));
+      box-shadow: 0 0 16px rgba(93,184,112,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header id="intranet-header">
+    <div class="logo-wrap">
+      <img src="images/yunque-logo.png" alt="耘雀">
+      <span class="logo-name">耘雀内网</span>
+    </div>
+    <nav class="intranet-nav">
+      <a href="intranet.html" class="nav-link">首页</a>
+      <a href="about.html" class="nav-link">关于我们</a>
+      <a href="overview.html" class="nav-link">村庄概况</a>
+      <a href="map.html" class="nav-link">村庄地图</a>
+      <a href="news.html" class="nav-link">村庄动态</a>
+      <a href="logs.html" class="nav-link">工作日志</a>
+      <a href="investigation.html" class="nav-link active">调查中心</a>
+    </nav>
+    <div class="header-badge">
+      <span class="online-dot"></span>
+      NO.000 · 已连接
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main id="intranet-main">
+    <div class="puzzle-header">
+      <h1>🗿 佛儿岩的秘密</h1>
+      <div class="puzzle-nav">
+        <a href="investigation.html">← 返回调查中心</a>
+      </div>
+    </div>
+
+    <!-- 已解决横幅（初始隐藏） -->
+    <div class="solved-banner" id="solved-banner" style="display: none;">
+      <h3>✓ 验证通过</h3>
+      <p>佛儿岩代表"时间倒流"，是循环的关键节点。<br>解锁谜题3：影子的真相</p>
+      <button class="next-puzzle-btn" onclick="location.href='investigation.html'">返回调查中心</button>
+    </div>
+
+    <!-- 谜题目标 -->
+    <div class="puzzle-goal">
+      <div class="puzzle-goal-title">▌ 谜题目标</div>
+      <div class="puzzle-goal-content">
+        发现佛儿岩符号与同心广场图腾的关系，理解"时间倒流"暗示。
+      </div>
+    </div>
+
+    <!-- 线索列表 -->
+    <div class="clues-section">
+      <div class="section-title">已收集线索</div>
+
+      <!-- 线索 2-A -->
+      <div class="clue-item locked" id="clue-2a">
+        <div class="clue-header">
+          <span class="clue-id">线索 2-A</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">佛儿岩符号照片</div>
+        <div class="clue-source">来源：丁莫洋勘察记录</div>
+        <div class="clue-content" style="display: none;">
+          岩石表面布满风化痕迹，但在中央区域，有一组清晰的刻痕。<br><br>
+          <strong>AI图像识别：</strong><br>
+          - 图案类型：象形符号<br>
+          - 相似度检索：与【同心广场地面图案】相似度 <strong>97.3%</strong><br>
+          - 差异区域：中心部位（眼部区域）
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"佛儿岩"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 2-B -->
+      <div class="clue-item locked" id="clue-2b">
+        <div class="clue-header">
+          <span class="clue-id">线索 2-B</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">畲族图腾考</div>
+        <div class="clue-source">来源：档案库-民俗文化</div>
+        <div class="clue-content" style="display: none;">
+          <strong>《畲族图腾考》- 凤英阿婆口述记录（1985年采集）</strong><br><br>
+          凤凰，畲族最高图腾，象征：<br>
+          - 双眼：日与月，阴阳调和<br>
+          - 展翅：自由与飞翔<br>
+          - 尾羽：五大分支，代表五大族群<br><br>
+          <strong>重要：</strong>凤凰睁眼为【朝日】，象征开始<br>
+          凤凰闭眼为【逆日】，象征...【后续内容损坏】
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"凤凰图腾"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 2-C -->
+      <div class="clue-item locked" id="clue-2c">
+        <div class="clue-header">
+          <span class="clue-id">线索 2-C</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">符号对比差异</div>
+        <div class="clue-source">来源：图像对比工具</div>
+        <div class="clue-content" style="display: none;">
+          <!-- 图像对比工具 -->
+          <div class="image-compare-tool">
+            <div class="image-compare-header">🔍 图像对比分析工具</div>
+            <div class="image-compare-grid">
+              <div class="image-compare-item" id="img-left" onclick="selectImage('left')">
+                <div class="image-compare-placeholder">🏛️</div>
+                <div class="image-compare-label">同心广场图腾</div>
+                <div class="image-compare-desc">睁眼凤凰，朝日方向</div>
+              </div>
+              <div class="image-compare-item" id="img-right" onclick="selectImage('right')">
+                <div class="image-compare-placeholder">🪨</div>
+                <div class="image-compare-label">佛儿岩符号</div>
+                <div class="image-compare-desc">闭眼凤凰，逆日方向</div>
+              </div>
+            </div>
+            <button class="compare-btn" id="compare-btn" onclick="performCompare()" disabled>
+              请先选择两张图像进行对比
+            </button>
+            <div class="compare-result" id="compare-result">
+              <div class="compare-result-title">📊 AI分析结果</div>
+              <div class="compare-result-item">
+                <span class="compare-result-label">眼部区域：</span>
+                <span class="compare-result-value highlight">同心广场：双眼睁开 ◉◉ / 佛儿岩：双眼闭合 ──</span>
+              </div>
+              <div class="compare-result-item">
+                <span class="compare-result-label">翅膀方向：</span>
+                <span class="compare-result-value highlight">同心广场：向上展开 ↗️↖️ / 佛儿岩：向下收拢 ↘️↙️</span>
+              </div>
+              <div class="compare-result-item">
+                <span class="compare-result-label">整体朝向：</span>
+                <span class="compare-result-value">同心广场：朝东（日出）/ 佛儿岩：朝西（日落）</span>
+              </div>
+              <div class="compare-conclusion">
+                <strong>结论：</strong>佛儿岩符号是同心广场图腾的<strong>逆序</strong>，代表"时间倒流"。
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="clue-unlock-hint">
+          💡 需要先获得线索2-A和2-B才能解锁对比工具
+        </div>
+      </div>
+
+      <!-- 线索 2-D -->
+      <div class="clue-item locked" id="clue-2d">
+        <div class="clue-header">
+          <span class="clue-id">线索 2-D</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">小坏蛋的对话</div>
+        <div class="clue-source">来源：丁莫洋现场录音</div>
+        <div class="clue-content" style="display: none;">
+          <strong>录音文件：FLR-2025-0303-A</strong><br>
+          录制地点：佛儿岩 | 状态：[紧急] 通讯中断前最后录音<br><br>
+          <strong>[丁莫洋]：</strong>（低声）他……他在对着岩石说话。像是在……像是在和什么人聊天。<br><br>
+          <strong>[小坏蛋]：</strong>（童声，清晰）你今天又来啦？<br><br>
+          <strong>[小坏蛋]：</strong>嗯，我知道，他们又在调查了。<br><br>
+          <strong>[小坏蛋]：</strong>但他们找不到的……只要你在，他们就永远找不到真相。<br><br>
+          <strong>[小坏蛋]：</strong>嘻嘻，我最喜欢和你在一起了。我们可以<strong>永远</strong>这样玩下去，对不对？<br><br>
+          <strong>[???]：</strong>（声音模糊，无法识别）<br><br>
+          <strong>[小坏蛋]：</strong>嗯！我会保护你的！就像你保护我一样！<br><br>
+          <strong>[丁莫洋]：</strong>（紧张）等等……那是什么？<br><br>
+          <strong>[系统提示]：</strong>检测到异常能量波动！<br><br>
+          <strong>[丁莫洋]：</strong>我……我的影子……<br><br>
+          <strong>[录音中断]</strong>
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"小坏蛋 佛儿岩"解锁此线索
+        </div>
+      </div>
+    </div>
+
+    <!-- 验证关卡 -->
+    <div class="validation-section locked" id="validation-section">
+      <div class="validation-title">📋 验证关卡</div>
+
+      <div class="clue-review">
+        <div class="clue-review-title">【线索回顾】</div>
+        <div class="clue-review-list" id="clue-review-list">
+          <div class="clue-review-item missing" id="review-2a">线索2-A：佛儿岩符号与同心广场图腾相似度97.3%</div>
+          <div class="clue-review-item missing" id="review-2b">线索2-B：凤凰睁眼为【朝日】，闭眼为【逆日】</div>
+          <div class="clue-review-item missing" id="review-2c">线索2-C：佛儿岩符号是同心广场图腾的逆序</div>
+          <div class="clue-review-item missing" id="review-2d">线索2-D：小坏蛋说"永远这样玩下去"</div>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        佛儿岩符号与同心广场图腾的差异，暗示了什么？
+      </div>
+
+      <div class="validation-options" id="validation-options">
+        <div class="validation-option" onclick="selectOption('A')">
+          <input type="radio" name="answer" value="A" id="option-A">
+          <label for="option-A">A. 空间折叠 - 两个地点处于不同空间维度</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('B')">
+          <input type="radio" name="answer" value="B" id="option-B">
+          <label for="option-B">B. 时间倒流 - 符号逆转代表时间流向相反</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('C')">
+          <input type="radio" name="answer" value="C" id="option-C">
+          <label for="option-C">C. 文化演变 - 不同时期的图腾演变结果</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('D')">
+          <input type="radio" name="answer" value="D" id="option-D">
+          <label for="option-D">D. 祭祀需要 - 特定仪式使用的反向图腾</label>
+        </div>
+      </div>
+
+      <button class="validation-submit-btn" onclick="submitAnswer()">提交答案</button>
+
+      <div class="validation-hint">
+        提示：回顾线索2-C的对比结果，关注"眼部"差异
+      </div>
+
+      <div id="validation-feedback"></div>
+    </div>
+  </main>
+
+  <footer id="intranet-footer">
+    YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
+  </footer>
+
+  <script>
+    // 线索数据
+    var clueData = {
+      '2-A': {
+        name: '佛儿岩符号照片',
+        content: '佛儿岩符号与同心广场图腾相似度97.3%',
+        unlocked: false,
+        unlockKeyword: '佛儿岩'
+      },
+      '2-B': {
+        name: '畲族图腾考',
+        content: '凤凰睁眼为【朝日】，闭眼为【逆日】',
+        unlocked: false,
+        unlockKeyword: '凤凰图腾'
+      },
+      '2-C': {
+        name: '符号对比差异',
+        content: '佛儿岩符号是同心广场图腾的逆序，代表时间倒流',
+        unlocked: false,
+        unlockCondition: ['2-A', '2-B']
+      },
+      '2-D': {
+        name: '小坏蛋的对话',
+        content: '小坏蛋说"永远这样玩下去"',
+        unlocked: false,
+        unlockKeyword: '小坏蛋'
+      }
+    };
+
+    // 答案反馈
+    var answerFeedback = {
+      'A': {
+        type: 'partial',
+        message: '⚠️ 部分合理，但无法解释小坏蛋的话"永远这样玩下去"<br>提示：考虑"永远"与"时间"的关系'
+      },
+      'B': {
+        type: 'correct',
+        message: '<strong>✓ 验证通过</strong><br><br>' +
+          '<strong>推理链：</strong><br>' +
+          '1. 同心广场图腾：睁眼凤凰 = 朝日 = 时间正常流动<br>' +
+          '2. 佛儿岩符号：闭眼凤凰 = 逆日 = 时间倒流<br>' +
+          '3. 小坏蛋的对话："永远"暗示循环、重复<br>' +
+          '4. 结论：佛儿岩是时间倒流的"节点"<br><br>' +
+          '【奖励】解锁谜题3：影子的真相'
+      },
+      'C': {
+        type: 'error',
+        message: '❌ 验证失败<br>符号年代检测：两处符号同龄（约1984年）<br>不存在"演变"时间差'
+      },
+      'D': {
+        type: 'error',
+        message: '❌ 验证失败<br>档案中无"反向图腾祭祀"记录<br>且无法解释丁莫洋遭遇的"异常能量"'
+      }
+    };
+
+    // 图像对比选择状态
+    var selectedImages = {
+      left: false,
+      right: false
+    };
+
+    // 初始化页面
+    function initPage() {
+      loadClueStatus();
+      updateClueDisplay();
+      checkValidationUnlock();
+      checkCompareToolUnlock();
+    }
+
+    // 加载线索状态
+    function loadClueStatus() {
+      var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      var clues = saveData.clues || {};
+      var foerClues = clues.foer || {};
+
+      for (var clueId in foerClues) { if (!foerClues.hasOwnProperty(clueId)) continue; var unlocked = foerClues[clueId];
+        if (clueData[clueId]) {
+          clueData[clueId].unlocked = unlocked;
+        }
+      }
+    }
+
+    // 更新线索显示
+    function updateClueDisplay() {
+      var unlockedCount = 0;
+
+      for (var clueId in clueData) { if (!clueData.hasOwnProperty(clueId)) continue; var data = clueData[clueId];
+        var element = document.getElementById('clue-' + clueId.toLowerCase());
+        var reviewElement = document.getElementById('review-' + clueId.toLowerCase());
+
+        if (data.unlocked && element) {
+          unlockedCount++;
+          element.classList.remove('locked');
+          element.querySelector('.clue-status').textContent = '已获得';
+          element.querySelector('.clue-status').classList.remove('locked');
+          element.querySelector('.clue-status').classList.add('unlocked');
+          element.querySelector('.clue-content').style.display = 'block';
+          var hint = element.querySelector('.clue-unlock-hint');
+          if (hint) hint.style.display = 'none';
+
+          if (reviewElement) {
+            reviewElement.classList.remove('missing');
+            reviewElement.textContent = '线索' + clueId + '：' + data.content;
+          }
+        }
+      }
+
+      return unlockedCount;
+    }
+
+    // 检查图像对比工具解锁
+    function checkCompareToolUnlock() {
+      var has2A = clueData['2-A'].unlocked;
+      var has2B = clueData['2-B'].unlocked;
+      var clue2C = document.getElementById('clue-2c');
+
+      if (has2A && has2B && clue2C) {
+        // 自动解锁线索2-C
+        clueData['2-C'].unlocked = true;
+        clue2C.classList.remove('locked');
+        clue2C.querySelector('.clue-status').textContent = '已获得';
+        clue2C.querySelector('.clue-status').classList.remove('locked');
+        clue2C.querySelector('.clue-status').classList.add('unlocked');
+        clue2C.querySelector('.clue-content').style.display = 'block';
+        var hint = clue2C.querySelector('.clue-unlock-hint');
+        if (hint) hint.style.display = 'none';
+
+        // 保存到localStorage
+        var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+        saveData.clues = saveData.clues || {};
+        saveData.clues.foer = saveData.clues.foer || {};
+        saveData.clues.foer['2-C'] = true;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+
+        // 更新验证区域
+        var reviewElement = document.getElementById('review-2c');
+        if (reviewElement) {
+          reviewElement.classList.remove('missing');
+          reviewElement.textContent = '线索2-C：' + clueData['2-C'].content;
+        }
+      }
+    }
+
+    // 选择图像
+    function selectImage(side) {
+      selectedImages[side] = !selectedImages[side];
+      var element = document.getElementById('img-' + side);
+      element.classList.toggle('selected', selectedImages[side]);
+
+      updateCompareButton();
+    }
+
+    // 更新对比按钮状态
+    function updateCompareButton() {
+      var btn = document.getElementById('compare-btn');
+      var bothSelected = selectedImages.left && selectedImages.right;
+
+      btn.disabled = !bothSelected;
+      btn.textContent = bothSelected ? '开始对比分析' : '请先选择两张图像进行对比';
+    }
+
+    // 执行对比
+    function performCompare() {
+      var result = document.getElementById('compare-result');
+      result.classList.add('show');
+
+      // 标记线索2-C已查看对比结果
+      var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      saveData.clues = saveData.clues || {};
+      saveData.clues.foer = saveData.clues.foer || {};
+      saveData.clues.foer['2-C-viewed'] = true;
+      localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+    }
+
+    // 检查是否解锁验证关卡
+    function checkValidationUnlock() {
+      var unlockedCount = updateClueDisplay();
+      var validationSection = document.getElementById('validation-section');
+
+      if (unlockedCount >= 4) {
+        validationSection.classList.remove('locked');
+      }
+    }
+
+    // 选择选项
+    function selectOption(value) {
+      document.getElementById('option-' + value).checked = true;
+    }
+
+    // 提交答案
+    function submitAnswer() {
+      var selectedOption = document.querySelector('input[name="answer"]:checked');
+      var feedbackDiv = document.getElementById('validation-feedback');
+
+      if (!selectedOption) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">请选择一个答案</div>';
+        return;
+      }
+
+      var answer = selectedOption.value;
+      var feedback = answerFeedback[answer];
+
+      if (feedback.type === 'correct') {
+        feedbackDiv.innerHTML = '<div class="validation-feedback success">' + feedback.message + '</div>';
+
+        // 保存完成状态
+        var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+        saveData.puzzlesSolved = saveData.puzzlesSolved || {};
+        saveData.puzzlesSolved.foer = true;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+
+        // 显示解决横幅
+        document.getElementById('solved-banner').style.display = 'block';
+
+        // 隐藏选项和按钮
+        document.getElementById('validation-options').style.display = 'none';
+        document.querySelector('.validation-submit-btn').style.display = 'none';
+        document.querySelector('.validation-hint').style.display = 'none';
+      } else if (feedback.type === 'partial') {
+        feedbackDiv.innerHTML = '<div class="validation-feedback partial">' + feedback.message + '</div>';
+      } else {
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">' + feedback.message + '</div>';
+      }
+    }
+
+    // 监听来自搜索的解锁消息
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'yunchu_save') {
+        initPage();
+      }
+    });
+
+    // 页面加载时初始化
+    initPage();
+  </script>
+</body>
+</html>

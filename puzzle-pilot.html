@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>领航鸟计划 - 调查中心 - 耘雀内网</title>
+  <link rel="stylesheet" href="css/intranet-pages.css">
+  <style>
+    /* 谜题页面专用样式 */
+    .puzzle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(201,162,39,0.2);
+    }
+
+    .puzzle-header h1 {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--accent2);
+      letter-spacing: 2px;
+    }
+
+    .puzzle-nav {
+      display: flex;
+      gap: 12px;
+    }
+
+    .puzzle-nav a {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 13px;
+      transition: all 0.25s;
+    }
+
+    .puzzle-nav a:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+    }
+
+    .puzzle-goal {
+      background: linear-gradient(135deg, rgba(201,162,39,0.1) 0%, rgba(15,31,20,0.3) 100%);
+      border: 1px solid rgba(201,162,39,0.25);
+      border-left: 4px solid var(--accent);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+
+    .puzzle-goal-title {
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .puzzle-goal-content {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .clues-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      color: var(--accent2);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201,162,39,0.15);
+    }
+
+    .clue-item {
+      background: linear-gradient(135deg, rgba(26,61,40,0.25) 0%, rgba(15,31,20,0.4) 100%);
+      border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    .clue-item:hover {
+      border-color: rgba(201,162,39,0.3);
+    }
+
+    .clue-item.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .clue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .clue-id {
+      font-size: 12px;
+      color: var(--accent);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    .clue-status {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .clue-status.unlocked {
+      background: rgba(93,184,112,0.15);
+      color: #5db870;
+      border: 1px solid rgba(93,184,112,0.3);
+    }
+
+    .clue-status.locked {
+      background: rgba(240,230,208,0.08);
+      color: var(--text-mute);
+      border: 1px solid rgba(240,230,208,0.15);
+    }
+
+    .clue-name {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .clue-source {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      margin-bottom: 12px;
+    }
+
+    .clue-content {
+      font-size: 14px;
+      color: rgba(240,230,208,0.85);
+      line-height: 1.8;
+      padding: 16px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 2px;
+    }
+
+    .clue-unlock-hint {
+      font-size: 12px;
+      color: var(--accent);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* 验证关卡 */
+    .validation-section {
+      background: linear-gradient(135deg, rgba(26,61,40,0.4) 0%, rgba(15,31,20,0.5) 100%);
+      border: 2px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 28px;
+    }
+
+    .validation-section.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .validation-title {
+      font-size: 18px;
+      color: var(--accent2);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+    }
+
+    .clue-review {
+      background: rgba(0,0,0,0.2);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .clue-review-title {
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .clue-review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .clue-review-item {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 8px 12px;
+      background: rgba(201,162,39,0.08);
+      border-radius: 2px;
+      border-left: 2px solid var(--accent);
+    }
+
+    .clue-review-item.missing {
+      opacity: 0.5;
+      border-left-color: var(--text-mute);
+    }
+
+    .validation-question {
+      font-size: 15px;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .validation-input-group {
+      display: flex;
+      gap: 12px;
+      max-width: 500px;
+      margin: 0 auto 16px;
+    }
+
+    .validation-input-group input {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 2px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      text-align: center;
+    }
+
+    .validation-input-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(201,162,39,0.2);
+    }
+
+    .validation-input-group button {
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      padding: 14px 32px;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .validation-input-group button:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+      box-shadow: 0 0 16px rgba(201,162,39,0.2);
+    }
+
+    .validation-feedback {
+      text-align: center;
+      padding: 16px;
+      border-radius: 4px;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .validation-feedback.success {
+      background: rgba(93,184,112,0.15);
+      border: 1px solid rgba(93,184,112,0.3);
+      color: #5db870;
+    }
+
+    .validation-feedback.error {
+      background: rgba(192,57,43,0.15);
+      border: 1px solid rgba(192,57,43,0.3);
+      color: #e74c3c;
+    }
+
+    .validation-feedback.partial {
+      background: rgba(201,162,39,0.15);
+      border: 1px solid rgba(201,162,39,0.3);
+      color: var(--accent2);
+    }
+
+    .validation-hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    .solved-banner {
+      background: linear-gradient(135deg, rgba(93,184,112,0.2) 0%, rgba(58,122,82,0.3) 100%);
+      border: 2px solid rgba(93,184,112,0.4);
+      border-radius: 4px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .solved-banner h3 {
+      font-size: 20px;
+      color: #5db870;
+      margin-bottom: 12px;
+    }
+
+    .solved-banner p {
+      font-size: 14px;
+      color: rgba(240,230,208,0.8);
+      line-height: 1.8;
+    }
+
+    .next-puzzle-btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, rgba(93,184,112,0.3), rgba(58,122,82,0.4));
+      border: 1px solid #5db870;
+      border-radius: 2px;
+      color: #5db870;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .next-puzzle-btn:hover {
+      background: linear-gradient(135deg, rgba(93,184,112,0.4), rgba(58,122,82,0.5));
+      box-shadow: 0 0 16px rgba(93,184,112,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header id="intranet-header">
+    <div class="logo-wrap">
+      <img src="images/yunque-logo.png" alt="耘雀">
+      <span class="logo-name">耘雀内网</span>
+    </div>
+    <nav class="intranet-nav">
+      <a href="intranet.html" class="nav-link">首页</a>
+      <a href="about.html" class="nav-link">关于我们</a>
+      <a href="overview.html" class="nav-link">村庄概况</a>
+      <a href="map.html" class="nav-link">村庄地图</a>
+      <a href="news.html" class="nav-link">村庄动态</a>
+      <a href="logs.html" class="nav-link">工作日志</a>
+      <a href="investigation.html" class="nav-link active">调查中心</a>
+    </nav>
+    <div class="header-badge">
+      <span class="online-dot"></span>
+      NO.000 · 已连接
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main id="intranet-main">
+    <div class="puzzle-header">
+      <h1>📋 领航鸟计划</h1>
+      <div class="puzzle-nav">
+        <a href="investigation.html">← 返回调查中心</a>
+      </div>
+    </div>
+
+    <!-- 已解决横幅（初始隐藏） -->
+    <div class="solved-banner" id="solved-banner" style="display: none;">
+      <h3>✓ 验证通过</h3>
+      <p>你了解了领航鸟计划的全貌。<br>小坏蛋是计划的核心，也是时间的锚点。<br>解锁谜题5：循环的起源</p>
+      <button class="next-puzzle-btn" onclick="location.href='investigation.html'">返回调查中心</button>
+    </div>
+
+    <!-- 谜题目标 -->
+    <div class="puzzle-goal">
+      <div class="puzzle-goal-title">▌ 谜题目标</div>
+      <div class="puzzle-goal-content">
+        了解领航鸟计划的全貌，理解小坏蛋在计划中的角色。
+      </div>
+    </div>
+
+    <!-- 线索列表 -->
+    <div class="clues-section">
+      <div class="section-title">已收集线索</div>
+
+      <!-- 线索 4-A -->
+      <div class="clue-item locked" id="clue-4a">
+        <div class="clue-header">
+          <span class="clue-id">线索 4-A</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">领航鸟计划档案</div>
+        <div class="clue-source">来源：研究中心数据库</div>
+        <div class="clue-content" style="display: none;">
+          <strong>项目代号：领航鸟计划</strong><br>
+          启动时间：1984年3月3日<br>
+          项目状态：进行中<br><br>
+          <strong>项目背景：</strong><br>
+          云处村时间场出现异常波动，每年农历三月初三会发生时间重置现象。经过调查，发现异常中心为一名9岁儿童（代号：小坏蛋）。<br><br>
+          <strong>核心目标：</strong><br>
+          1. 研究时间锚点的形成机制<br>
+          2. 寻找稳定时间场的方法<br>
+          3. 在不影响实验体的情况下，恢复村庄正常时间流
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"领航鸟"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 4-B -->
+      <div class="clue-item locked" id="clue-4b">
+        <div class="clue-header">
+          <span class="clue-id">线索 4-B</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">第42次循环记录</div>
+        <div class="clue-source">来源：观测者 NO.042 记录</div>
+        <div class="clue-content" style="display: none;">
+          <strong>第42次循环观察记录</strong><br>
+          观测者：NO.042<br>
+          日期：2022年3月3日<br><br>
+          这是我第42次经历同一天的到来。<br><br>
+          小坏蛋依然9岁。他依然会在村口等我，递给我一块温热的酥饼。<br><br>
+          但今天，我发现了一件事：<br><br>
+          <strong>小坏蛋的记忆没有被完全重置。</strong><br><br>
+          他对我说："你上次答应给我带的那本书呢？"<br><br>
+          我愣住了。上次循环中，我确实答应过他。<br><br>
+          这意味着什么？<strong>时间锚点正在产生自我意识。</strong><br><br>
+          如果锚点意识到自己在循环中，整个时间场可能会崩溃。<br><br>
+          或者……这正是我们一直在寻找的突破点？
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"第42次"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 4-C -->
+      <div class="clue-item locked" id="clue-4c">
+        <div class="clue-header">
+          <span class="clue-id">线索 4-C</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">小坏蛋的身份</div>
+        <div class="clue-source">来源：潘安森私人笔记</div>
+        <div class="clue-content" style="display: none;">
+          <strong>【绝密】关于时间锚点的本质</strong><br><br>
+          经过多年的观察和研究，我终于理解了小坏蛋的本质。<br><br>
+          他不是普通的孩子。<br><br>
+          <strong>他是第一个意识到时间循环的人。</strong><br><br>
+          在最初的循环中，小坏蛋经历了某种创伤（具体原因仍在调查中）。为了保护自己的心灵，他创造了一个"愿望"——<strong>希望时间停留在最美好的那一天</strong>。<br><br>
+          这个愿望如此强烈，以至于影响了整个村庄的时间场。<br><br>
+          从此，云处村被困在了三月三这一天。<br><br>
+          小坏蛋成为了<strong>时间锚点</strong>——既是循环的维持者，也是循环的囚徒。<br><br>
+          他的影子，则是这个愿望的具象化，是<strong>时间锚点的投影</strong>。
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"时间锚点"解锁此线索
+        </div>
+      </div>
+    </div>
+
+    <!-- 验证关卡 -->
+    <div class="validation-section locked" id="validation-section">
+      <div class="validation-title">📋 验证关卡</div>
+
+      <div class="clue-review">
+        <div class="clue-review-title">【线索回顾】</div>
+        <div class="clue-review-list" id="clue-review-list">
+          <div class="clue-review-item missing" id="review-4a">线索4-A：小坏蛋是领航鸟计划的研究对象</div>
+          <div class="clue-review-item missing" id="review-4b">线索4-B：小坏蛋的记忆没有被完全重置</div>
+          <div class="clue-review-item missing" id="review-4c">线索4-C：小坏蛋是第一个意识到循环的人，是时间锚点</div>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        基于以上线索，领航鸟计划的核心发现是什么？
+      </div>
+
+      <div class="validation-input-group">
+        <input type="text" id="validation-answer" placeholder="输入关键词..." autocomplete="off">
+        <button onclick="submitAnswer()">提交验证</button>
+      </div>
+
+      <div class="validation-hint">
+        提示：小坏蛋的本质是什么？他与时间循环的关系是什么？
+      </div>
+
+      <div id="validation-feedback"></div>
+    </div>
+  </main>
+
+  <footer id="intranet-footer">
+    YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
+  </footer>
+
+  <script>
+    // 线索数据
+    var clueData = {
+      '4-A': {
+        name: '领航鸟计划档案',
+        content: '小坏蛋是领航鸟计划的研究对象，是时间锚点',
+        unlocked: false,
+        unlockKeyword: '领航鸟'
+      },
+      '4-B': {
+        name: '第42次循环记录',
+        content: '小坏蛋的记忆没有被完全重置，正在产生自我意识',
+        unlocked: false,
+        unlockKeyword: '42'
+      },
+      '4-C': {
+        name: '小坏蛋的身份',
+        content: '小坏蛋是第一个意识到循环的人，是时间锚点',
+        unlocked: false,
+        unlockKeyword: '时间锚点'
+      }
+    };
+
+    // 正确答案
+    var correctAnswers = ['时间锚点', '锚点', '小坏蛋是时间锚点', '锚点投影', '时间锚点的投影'];
+
+    // 错误反馈
+    var wrongFeedback = {
+      '实验体': '⚠️ 部分正确，但不完整<br>实验体是表象，更重要的是他在时间场中的作用',
+      '研究对象': '⚠️ 部分正确<br>研究对象是身份，不是本质',
+      '囚犯': '⚠️ 情感理解正确<br>但我们需要一个更准确的术语来描述他在时间场中的角色',
+      '受害者': '⚠️ 情感理解正确<br>但请从技术角度思考他的功能',
+      '孩子': '❌ 过于笼统<br>请思考他与时间循环的特殊关系'
+    };
+
+    // 初始化页面
+    function initPage() {
+      loadClueStatus();
+      updateClueDisplay();
+      checkValidationUnlock();
+    }
+
+    // 加载线索状态
+    function loadClueStatus() {
+      var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      var clues = saveData.clues || {};
+      var pilotClues = clues.pilot || {};
+
+      for (var clueId in pilotClues) { if (!pilotClues.hasOwnProperty(clueId)) continue; var unlocked = pilotClues[clueId];
+        if (clueData[clueId]) {
+          clueData[clueId].unlocked = unlocked;
+        }
+      }
+    }
+
+    // 更新线索显示
+    function updateClueDisplay() {
+      var unlockedCount = 0;
+
+      for (var clueId in clueData) { if (!clueData.hasOwnProperty(clueId)) continue; var data = clueData[clueId];
+        var element = document.getElementById('clue-' + clueId.toLowerCase());
+        var reviewElement = document.getElementById('review-' + clueId.toLowerCase());
+
+        if (data.unlocked && element) {
+          unlockedCount++;
+          element.classList.remove('locked');
+          element.querySelector('.clue-status').textContent = '已获得';
+          element.querySelector('.clue-status').classList.remove('locked');
+          element.querySelector('.clue-status').classList.add('unlocked');
+          element.querySelector('.clue-content').style.display = 'block';
+          var hint = element.querySelector('.clue-unlock-hint');
+          if (hint) hint.style.display = 'none';
+
+          if (reviewElement) {
+            reviewElement.classList.remove('missing');
+            reviewElement.textContent = '线索' + clueId + '：' + data.content;
+          }
+        }
+      }
+
+      return unlockedCount;
+    }
+
+    // 检查是否解锁验证关卡
+    function checkValidationUnlock() {
+      var unlockedCount = updateClueDisplay();
+      var validationSection = document.getElementById('validation-section');
+
+      if (unlockedCount >= 3) {
+        validationSection.classList.remove('locked');
+      }
+    }
+
+    // 提交答案
+    function submitAnswer() {
+      var input = document.getElementById('validation-answer');
+      var answer = input.value.trim();
+      var feedbackDiv = document.getElementById('validation-feedback');
+
+      if (!answer) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">请输入答案</div>';
+        return;
+      }
+
+      // 检查正确答案
+      var isCorrect = false;
+      for (var ci = 0; ci < correctAnswers.length; ci++) {
+        var correct = correctAnswers[ci];
+        if (answer.toLowerCase().indexOf(correct.toLowerCase()) !== -1 ||
+            correct.toLowerCase().indexOf(answer.toLowerCase()) !== -1) {
+          isCorrect = true;
+          break;
+        }
+      }
+
+      if (isCorrect) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback success">' +
+            '<strong>✓ 验证通过</strong><br><br>' +
+            '<strong>核心发现：</strong>小坏蛋是<strong>时间锚点</strong>。<br><br>' +
+            '他是第一个意识到时间循环的人，为了保护自己的心灵，他创造了"永远停留在最美好的那一天"的愿望。<br><br>' +
+            '这个愿望如此强烈，以至于影响了整个村庄的时间场，使云处村被困在了三月三这一天。<br><br>' +
+            '他的影子，则是这个愿望的具象化，是<strong>时间锚点的投影</strong>。<br><br>' +
+            '【奖励】解锁谜题5：循环的起源' +
+          '</div>';
+
+        // 保存完成状态
+        var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+        saveData.puzzlesSolved = saveData.puzzlesSolved || {};
+        saveData.puzzlesSolved.pilot = true;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+
+        // 显示解决横幅
+        document.getElementById('solved-banner').style.display = 'block';
+
+        // 隐藏输入区域
+        document.querySelector('.validation-input-group').style.display = 'none';
+        document.querySelector('.validation-hint').style.display = 'none';
+      } else {
+        // 检查是否有特定的错误反馈
+        var feedback = null;
+        for (var wrongAnswer in wrongFeedback) { if (!wrongFeedback.hasOwnProperty(wrongAnswer)) continue; var message = wrongFeedback[wrongAnswer];
+          if (answer.toLowerCase().indexOf(wrongAnswer.toLowerCase()) !== -1) {
+            feedback = message;
+            break;
+          }
+        }
+
+        if (!feedback) {
+          feedback = '❌ 验证失败<br>证据不足，请重新审视收集到的线索。<br>提示：思考小坏蛋与时间循环的特殊关系';
+        }
+
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">' + feedback + '</div>';
+      }
+    }
+
+    // 监听来自搜索的解锁消息
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'yunchu_save') {
+        initPage();
+      }
+    });
+
+    // 页面加载时初始化
+    initPage();
+
+    // 回车提交
+    document.getElementById('validation-answer').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        submitAnswer();
+      }
+    });
+  </script>
+</body>
+</html>

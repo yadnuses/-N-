@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>优秀员工表彰 - 耘雀内网 · 云处村</title>
+  <link rel="stylesheet" href="css/intranet-pages.css">
+  <style>
+    .honor-card {
+      background: linear-gradient(135deg, rgba(26,61,40,0.3) 0%, rgba(15,31,20,0.5) 100%);
+      border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 4px;
+      padding: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .honor-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a6a4a, #2a5a3f);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .honor-content {
+      flex: 1;
+    }
+    .honor-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--accent2);
+      margin-bottom: 4px;
+    }
+    .honor-title {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .honor-desc {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+    .honor-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(201,162,39,0.2), rgba(201,162,39,0.1));
+      border: 1px solid rgba(201,162,39,0.4);
+      color: var(--accent);
+      padding: 4px 12px;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header id="intranet-header">
+    <div class="logo-wrap">
+      <img src="images/yunque-logo.png" alt="耘雀">
+      <span class="logo-name">耘雀内网</span>
+      <span class="logo-sep"></span>
+    </div>
+    <nav class="intranet-nav">
+      <a href="intranet.html" class="nav-link">首页</a>
+      <a href="about.html" class="nav-link">关于我们</a>
+      <a href="overview.html" class="nav-link">村庄概况</a>
+      <a href="map.html" class="nav-link">村庄地图</a>
+      <a href="news.html" class="nav-link">村庄动态</a>
+      <a href="logs.html" class="nav-link">工作日志</a>
+      <a href="honors.html" class="nav-link active">优秀员工</a>
+    </nav>
+    <div class="header-badge">
+      <span class="online-dot"></span>
+      <span>NO.000 在线</span>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main id="intranet-main">
+    <div class="page-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:18px;">🏆</span>
+        <span style="font-size:16px;font-weight:bold;color:var(--accent2);letter-spacing:2px;">优秀员工表彰</span>
+      </div>
+      <a href="intranet.html" class="back-btn">← 返回内网主页</a>
+    </div>
+
+    <div class="org-section">
+      <!-- 潘安森 -->
+      <div class="honor-card">
+        <div class="honor-avatar">🦅</div>
+        <div class="honor-content">
+          <div class="honor-name">潘安森</div>
+          <div class="honor-title">NO.001 · 总负责人 · 2020年度</div>
+          <div class="honor-desc">
+            耘雀组织的创立者，第一个发现云处村时间异常现象的观测者。在过去五年中，他建立了完整的观测体系，招募了来自不同时空的"我们"。他的坚持让拯救行动得以延续。
+          </div>
+          <div class="honor-badge">开拓者奖</div>
+        </div>
+      </div>
+
+      <!-- 丁莫洋 -->
+      <div class="honor-card">
+        <div class="honor-avatar">🛡️</div>
+        <div class="honor-content">
+          <div class="honor-name">丁莫洋</div>
+          <div class="honor-title">NO.002 · 联合发起人 · 2022年度</div>
+          <div class="honor-desc">
+            负责保护所有观测者的安全。在多次时空乱流中，他及时预警并保护了队友。他的存在让每一个"我们"都能安心执行任务，不必担心来自时空本身的威胁。
+          </div>
+          <div class="honor-badge">守护者奖</div>
+        </div>
+      </div>
+
+      <!-- 曾佳秋 -->
+      <div class="honor-card">
+        <div class="honor-avatar">📡</div>
+        <div class="honor-content">
+          <div class="honor-name">曾佳秋</div>
+          <div class="honor-title">NO.003 · 信息管控 · 2025年度</div>
+          <div class="honor-desc">
+            来自云处村消失后的未来。她建立了跨时空的通讯网络，让每一个"我们"都能保持联系。同时，她也是小坏蛋的主要照顾者，用温暖守护着这个孩子。
+          </div>
+          <div class="honor-badge">连接者奖</div>
+        </div>
+      </div>
+
+      <!-- 武家铭 -->
+      <div class="honor-card">
+        <div class="honor-avatar">🔮</div>
+        <div class="honor-content">
+          <div class="honor-name">武家铭</div>
+          <div class="honor-title">NO.004 · 记忆修复专员 · 2029年度</div>
+          <div class="honor-desc">
+            来自失败的未来，是那场灾难唯一的幸存者。他带着破碎的记忆回到现在，只为改变结局。他的痛苦让我们明白，失败不是选项，我们必须成功。
+          </div>
+          <div class="honor-badge">警示者奖</div>
+        </div>
+      </div>
+
+      <!-- 特殊表彰：NO.000 -->
+      <div class="honor-card" style="border-color:rgba(201,162,39,0.4);background:linear-gradient(135deg,rgba(201,162,39,0.1),rgba(15,31,20,0.5));">
+        <div class="honor-avatar" style="background:linear-gradient(135deg,#c9a227,#a08020);">⭐</div>
+        <div class="honor-content">
+          <div class="honor-name" style="color:#c9a227;">NO.000 · 待激活</div>
+          <div class="honor-title">原点观测者 · 特殊表彰</div>
+          <div class="honor-desc">
+            "每一个循环都会诞生一个新的你，但这一次……我希望你能打破它。"——潘安森<br><br>
+            你是第N个进入云处村的观测者，也是所有时间线的交汇点。你的选择，将决定云处村的命运。
+          </div>
+          <div class="honor-badge" style="background:linear-gradient(135deg,#c9a227,#a08020);color:#1a1400;border:none;">希望之星</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="intranet-footer">
+    YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
+  </footer>
+</body>
+</html>

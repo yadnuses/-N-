@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>影子的真相 - 调查中心 - 耘雀内网</title>
+  <link rel="stylesheet" href="css/intranet-pages.css">
+  <style>
+    /* 谜题页面专用样式 */
+    .puzzle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(201,162,39,0.2);
+    }
+
+    .puzzle-header h1 {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--accent2);
+      letter-spacing: 2px;
+    }
+
+    .puzzle-nav {
+      display: flex;
+      gap: 12px;
+    }
+
+    .puzzle-nav a {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 13px;
+      transition: all 0.25s;
+    }
+
+    .puzzle-nav a:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+    }
+
+    .puzzle-goal {
+      background: linear-gradient(135deg, rgba(201,162,39,0.1) 0%, rgba(15,31,20,0.3) 100%);
+      border: 1px solid rgba(201,162,39,0.25);
+      border-left: 4px solid var(--accent);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+
+    .puzzle-goal-title {
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .puzzle-goal-content {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .clues-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      color: var(--accent2);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201,162,39,0.15);
+    }
+
+    .clue-item {
+      background: linear-gradient(135deg, rgba(26,61,40,0.25) 0%, rgba(15,31,20,0.4) 100%);
+      border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    .clue-item:hover {
+      border-color: rgba(201,162,39,0.3);
+    }
+
+    .clue-item.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .clue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .clue-id {
+      font-size: 12px;
+      color: var(--accent);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    .clue-status {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .clue-status.unlocked {
+      background: rgba(93,184,112,0.15);
+      color: #5db870;
+      border: 1px solid rgba(93,184,112,0.3);
+    }
+
+    .clue-status.locked {
+      background: rgba(240,230,208,0.08);
+      color: var(--text-mute);
+      border: 1px solid rgba(240,230,208,0.15);
+    }
+
+    .clue-name {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .clue-source {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      margin-bottom: 12px;
+    }
+
+    .clue-content {
+      font-size: 14px;
+      color: rgba(240,230,208,0.85);
+      line-height: 1.8;
+      padding: 16px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 2px;
+    }
+
+    .clue-unlock-hint {
+      font-size: 12px;
+      color: var(--accent);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* 密码解锁区域 */
+    .password-unlock {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .password-hint {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .password-input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .password-input-group input {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 2px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .password-input-group button {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* 验证关卡 */
+    .validation-section {
+      background: linear-gradient(135deg, rgba(26,61,40,0.4) 0%, rgba(15,31,20,0.5) 100%);
+      border: 2px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 28px;
+    }
+
+    .validation-section.locked {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .validation-title {
+      font-size: 18px;
+      color: var(--accent2);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+    }
+
+    .clue-review {
+      background: rgba(0,0,0,0.2);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .clue-review-title {
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .clue-review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .clue-review-item {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 8px 12px;
+      background: rgba(201,162,39,0.08);
+      border-radius: 2px;
+      border-left: 2px solid var(--accent);
+    }
+
+    .clue-review-item.missing {
+      opacity: 0.5;
+      border-left-color: var(--text-mute);
+    }
+
+    .validation-question {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .validation-question-number {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .validation-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .validation-option {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 4px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .validation-option:hover {
+      border-color: rgba(201,162,39,0.5);
+      background: rgba(201,162,39,0.05);
+    }
+
+    .validation-option input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+
+    .validation-option label {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .validation-submit-btn {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--gov-mid), var(--gov-light));
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .validation-submit-btn:hover {
+      background: linear-gradient(135deg, var(--gov-light), var(--gov-mid));
+      box-shadow: 0 0 16px rgba(201,162,39,0.2);
+    }
+
+    .validation-feedback {
+      text-align: center;
+      padding: 16px;
+      border-radius: 4px;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .validation-feedback.success {
+      background: rgba(93,184,112,0.15);
+      border: 1px solid rgba(93,184,112,0.3);
+      color: #5db870;
+    }
+
+    .validation-feedback.error {
+      background: rgba(192,57,43,0.15);
+      border: 1px solid rgba(192,57,43,0.3);
+      color: #e74c3c;
+    }
+
+    .validation-feedback.partial {
+      background: rgba(201,162,39,0.15);
+      border: 1px solid rgba(201,162,39,0.3);
+      color: var(--accent2);
+    }
+
+    .solved-banner {
+      background: linear-gradient(135deg, rgba(93,184,112,0.2) 0%, rgba(58,122,82,0.3) 100%);
+      border: 2px solid rgba(93,184,112,0.4);
+      border-radius: 4px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .solved-banner h3 {
+      font-size: 20px;
+      color: #5db870;
+      margin-bottom: 12px;
+    }
+
+    .solved-banner p {
+      font-size: 14px;
+      color: rgba(240,230,208,0.8);
+      line-height: 1.8;
+    }
+
+    .next-puzzle-btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, rgba(93,184,112,0.3), rgba(58,122,82,0.4));
+      border: 1px solid #5db870;
+      border-radius: 2px;
+      color: #5db870;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .next-puzzle-btn:hover {
+      background: linear-gradient(135deg, rgba(93,184,112,0.4), rgba(58,122,82,0.5));
+      box-shadow: 0 0 16px rgba(93,184,112,0.2);
+    }
+
+    /* 外部链接样式 */
+    .external-link {
+      color: var(--accent);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .external-link:hover {
+      color: var(--accent2);
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header id="intranet-header">
+    <div class="logo-wrap">
+      <img src="images/yunque-logo.png" alt="耘雀">
+      <span class="logo-name">耘雀内网</span>
+    </div>
+    <nav class="intranet-nav">
+      <a href="intranet.html" class="nav-link">首页</a>
+      <a href="about.html" class="nav-link">关于我们</a>
+      <a href="overview.html" class="nav-link">村庄概况</a>
+      <a href="map.html" class="nav-link">村庄地图</a>
+      <a href="news.html" class="nav-link">村庄动态</a>
+      <a href="logs.html" class="nav-link">工作日志</a>
+      <a href="investigation.html" class="nav-link active">调查中心</a>
+    </nav>
+    <div class="header-badge">
+      <span class="online-dot"></span>
+      NO.000 · 已连接
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main id="intranet-main">
+    <div class="puzzle-header">
+      <h1>👥 影子的真相</h1>
+      <div class="puzzle-nav">
+        <a href="investigation.html">← 返回调查中心</a>
+      </div>
+    </div>
+
+    <!-- 已解决横幅（初始隐藏） -->
+    <div class="solved-banner" id="solved-banner" style="display: none;">
+      <h3>✓ 验证通过</h3>
+      <p>你理解了影子的本质。<br>影子不是敌人，它是一个孩子想要永远快乐的愿望。<br>【解锁最终谜题】循环的起源</p>
+      <button class="next-puzzle-btn" onclick="location.href='investigation.html'">返回调查中心</button>
+    </div>
+
+    <!-- 谜题目标 -->
+    <div class="puzzle-goal">
+      <div class="puzzle-goal-title">▌ 谜题目标</div>
+      <div class="puzzle-goal-content">
+        理解影子的本质、来源、与小坏蛋的关系。
+      </div>
+    </div>
+
+    <!-- 线索列表 -->
+    <div class="clues-section">
+      <div class="section-title">已收集线索</div>
+
+      <!-- 线索 3-A -->
+      <div class="clue-item locked" id="clue-3a">
+        <div class="clue-header">
+          <span class="clue-id">线索 3-A</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">影子的低语</div>
+        <div class="clue-source">来源：丁莫洋对讲机记录（状态：医疗观察中）</div>
+        <div class="clue-content" style="display: none;">
+          <strong>对讲机记录 - 丁莫洋（完整版）</strong><br><br>
+          <strong>[20:15:32]</strong> 莫洋：安森，情况有变。我的影子……<br><br>
+          <strong>[20:15:35]</strong> 潘安森：莫洋？怎么了？<br><br>
+          <strong>[20:15:40]</strong> 莫洋：（声音颤抖）它自己在动……它不跟着我……<br><br>
+          <strong>[20:15:45]</strong> 莫洋：它……它在笑！我听到了！它在笑！<br><br>
+          <strong>[20:15:50]</strong> 系统：检测到异常能量波动！<br><br>
+          <strong>[20:15:55]</strong> 潘安森：莫洋！撤退！立刻撤退！<br><br>
+          <strong>[20:16:00]</strong> 莫洋：不对……不对……它不是要伤害我……<br><br>
+          <strong>[20:16:05]</strong> 莫洋：它在对我说话……它说……"欢迎回家"……<br><br>
+          <strong>[20:16:10]</strong> <strong>[通讯中断]</strong>
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"影子 活了"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 3-B -->
+      <div class="clue-item locked" id="clue-3b">
+        <div class="clue-header">
+          <span class="clue-id">线索 3-B</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">影子规律数据</div>
+        <div class="clue-source">来源：曾佳秋数据分析报告</div>
+        <div class="clue-content" style="display: none;">
+          <strong>《影子出现频率与循环次数相关性分析》</strong><br>
+          作者：曾佳秋 | 日期：2025.3.3<br><br>
+          <strong>关键数据：</strong><br>
+          ├─ 村民A：第1次循环进入，当前第100次循环<br>
+          │   影子目击次数：99次<br>
+          ├─ 村民B：第50次循环进入，当前第100次循环<br>
+          │   影子目击次数：50次<br>
+          └─ 村民C：第99次循环进入，当前第100次循环<br>
+              影子目击次数：1次<br><br>
+          <strong>公式推导：</strong><br>
+          设：当前循环次数 = N<br>
+          设：村民进入循环的时间 = M<br>
+          设：影子目击次数 = S<br><br>
+          <strong>S = N - M</strong><br><br>
+          <strong>结论：</strong>影子数量 = 循环次数 - 个体进入时间<br>
+          或者说：<strong>影子是"循环的累积"在个体身上的投影</strong>
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"影子 统计"解锁此线索
+        </div>
+      </div>
+
+      <!-- 线索 3-C -->
+      <div class="clue-item locked" id="clue-3c">
+        <div class="clue-header">
+          <span class="clue-id">线索 3-C</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">武家铭的记忆</div>
+        <div class="clue-source">来源：私聊频道 - 武家铭</div>
+        <div class="clue-content" style="display: none;">
+          <strong>【私聊频道 - 武家铭】</strong><br><br>
+          武家铭：000，我想和你谈谈。<br><br>
+          武家铭：关于影子……我知道一些事。<br><br>
+          武家铭：在我的那个未来……我曾经……和影子说过话。<br><br>
+          武家铭：那时候，循环已经开始崩塌。所有人都疯了，或者消失了。我一个人在村庄里游荡，不知道过了多久。然后……影子出现了。<br><br>
+          武家铭：它没有伤害我。它对我说："你也想永远留在这里对吗？永远不用面对外面的痛苦。"<br><br>
+          武家铭：我说："我想救大家。"影子笑了："救他们？他们不想被救。他们选择了这里。"<br><br>
+          <strong>玩家：</strong>选择了这里？<br><br>
+          武家铭：影子告诉我……循环不是强加给村庄的。是村民们自己选择的。他们选择了永远活在三月三，永远不用面对失去和痛苦。<strong>影子只是……实现了他们的愿望。</strong>
+        </div>
+        <div class="clue-unlock-hint">
+          💡 完成谜题2（佛儿岩）后，武家铭会主动联系你
+        </div>
+      </div>
+
+      <!-- 线索 3-D -->
+      <div class="clue-item locked" id="clue-3d">
+        <div class="clue-header">
+          <span class="clue-id">线索 3-D</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">村民论坛帖子</div>
+        <div class="clue-source">来源：外部网站 yunchu-forum.com</div>
+        <div class="clue-content" style="display: none;">
+          <strong>【云处村村民论坛 - 精选帖子】</strong><br><br>
+          <strong>1. "有人在跟踪我"</strong> - 发帖人：山里的老王<br>
+          "这几天总感觉有人跟着我。昨天回头看了，发现地上有两个影子……一个是我的，另一个……也是我的？"<br><br>
+          <strong>2. "我是不是疯了"</strong> - 发帖人：村东小李<br>
+          "昨天照镜子，镜子里的人对我笑了。但我没笑。那不是我的表情。"<br><br>
+          <strong>3. "我家孩子在说胡话"</strong> - 发帖人：雷铁山<br>
+          "小满说她的影子会陪她玩。我告诉她影子不会动，她说'会的，它还会说话'。"<br><br>
+          <strong>4. "黑黑的东西"</strong> - 发帖人：【已注销】<br>
+          "村门石那里有黑黑的东西。它会跟你说话。不要听它的。不要听它的。不要……"<br><br>
+          [该账号已注销]
+        </div>
+        <div class="clue-unlock-hint">
+          💡 搜索"云处村"时有机会发现外部论坛链接，或 <span class="external-link" onclick="window.open('yunchu-forum.html', '_blank')">直接访问 yunchu-forum.com</span>
+        </div>
+      </div>
+
+      <!-- 线索 3-E -->
+      <div class="clue-item locked" id="clue-3e">
+        <div class="clue-header">
+          <span class="clue-id">线索 3-E</span>
+          <span class="clue-status locked">未解锁</span>
+        </div>
+        <div class="clue-name">研究中心档案</div>
+        <div class="clue-source">来源：领航鸟计划 - 第42次循环评估报告 [加密]</div>
+        <div class="clue-content" style="display: none;">
+          <div id="doc-locked">
+            <strong>文档名称：</strong>领航鸟计划 - 第42次循环评估报告<br>
+            <strong>状态：</strong>[高度加密]<br>
+            <strong>加密方式：</strong>密码保护<br><br>
+            <div class="password-unlock">
+              <div class="password-hint">密码提示：文档创建者的身份编号（格式：NO.XXX）</div>
+              <div class="password-input-group">
+                <input type="text" id="doc-password" placeholder="输入密码...">
+                <button onclick="unlockDocument()">解密</button>
+              </div>
+              <div id="password-feedback" style="margin-top: 8px; font-size: 12px;"></div>
+            </div>
+          </div>
+          <div id="doc-content" style="display: none;">
+            <strong>领航鸟计划 - 第42次循环评估报告（节选）</strong><br><br>
+            <strong>实验目标：</strong>利用儿童时间锚点特性稳定村庄时间场<br><br>
+            <strong>实验体：</strong>小坏蛋（9岁，循环起点）<br><br>
+            <strong>关键发现：</strong><br><br>
+            在每次时间重置时，实验体的影子会出现异常。<br><br>
+            该影子表现出<strong>自主意识</strong>，能够与外界互动。<br><br>
+            我们将其命名为【时间锚点的投影】，简称【投影体】。<br><br>
+            投影体具有实现"愿望"的能力，但这是有代价的。<br><br>
+            它实现的愿望越多，对时间场的控制就越强。<br><br>
+            同时，实验体本身的记忆就会被侵蚀得越多。<br><br>
+            <strong>当前状态：</strong>投影体已控制时间场 97.3%<br><br>
+            <strong>预测：</strong>如果不加以阻止，投影体将在第100次循环时完全实体化，届时时间场将永久固化，无法逆转。
+          </div>
+        </div>
+        <div class="clue-unlock-hint">
+          💡 在搜索栏输入"实验体 影子"找到此文档，需要密码解密
+        </div>
+      </div>
+    </div>
+
+    <!-- 验证关卡 -->
+    <div class="validation-section locked" id="validation-section">
+      <div class="validation-title">📋 综合分析题</div>
+
+      <div class="clue-review">
+        <div class="clue-review-title">【线索回顾】</div>
+        <div class="clue-review-list" id="clue-review-list">
+          <div class="clue-review-item missing" id="review-3a">线索3-A：影子会笑，会说"欢迎回家"</div>
+          <div class="clue-review-item missing" id="review-3b">线索3-B：影子是"循环的累积"投影</div>
+          <div class="clue-review-item missing" id="review-3c">线索3-C：影子实现了村民"永远停留"的愿望</div>
+          <div class="clue-review-item missing" id="review-3d">线索3-D：村民普遍遭遇影子现象</div>
+          <div class="clue-review-item missing" id="review-3e">线索3-E：影子是"时间锚点的投影"，即小坏蛋的投影体</div>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        <span class="validation-question-number">1.</span> 影子的来源：
+      </div>
+      <div class="validation-options" id="q1-options">
+        <div class="validation-option" onclick="selectOption('q1', 'A')">
+          <input type="radio" name="q1" value="A" id="q1-A">
+          <label for="q1-A">A. 外来入侵的怪物</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q1', 'B')">
+          <input type="radio" name="q1" value="B" id="q1-B">
+          <label for="q1-B">B. 小坏蛋执念的具象化</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q1', 'C')">
+          <input type="radio" name="q1" value="C" id="q1-C">
+          <label for="q1-C">C. 村民集体愿望的集合体</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q1', 'D')">
+          <input type="radio" name="q1" value="D" id="q1-D">
+          <label for="q1-D">D. 时间循环的自然产物</label>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        <span class="validation-question-number">2.</span> 影子的目的：
+      </div>
+      <div class="validation-options" id="q2-options">
+        <div class="validation-option" onclick="selectOption('q2', 'A')">
+          <input type="radio" name="q2" value="A" id="q2-A">
+          <label for="q2-A">A. 毁灭村庄</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q2', 'B')">
+          <input type="radio" name="q2" value="B" id="q2-B">
+          <label for="q2-B">B. 保护小坏蛋永远快乐</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q2', 'C')">
+          <input type="radio" name="q2" value="C" id="q2-C">
+          <label for="q2-C">C. 夺取实体控制权</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q2', 'D')">
+          <input type="radio" name="q2" value="D" id="q2-D">
+          <label for="q2-D">D. 实现村民"永远停留"的愿望</label>
+        </div>
+      </div>
+
+      <div class="validation-question">
+        <span class="validation-question-number">3.</span> 打破影子的方法是：
+      </div>
+      <div class="validation-options" id="q3-options">
+        <div class="validation-option" onclick="selectOption('q3', 'A')">
+          <input type="radio" name="q3" value="A" id="q3-A">
+          <label for="q3-A">A. 消灭小坏蛋</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q3', 'B')">
+          <input type="radio" name="q3" value="B" id="q3-B">
+          <label for="q3-B">B. 让小坏蛋愿意醒来</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q3', 'C')">
+          <input type="radio" name="q3" value="C" id="q3-C">
+          <label for="q3-C">C. 用武力击败影子</label>
+        </div>
+        <div class="validation-option" onclick="selectOption('q3', 'D')">
+          <input type="radio" name="q3" value="D" id="q3-D">
+          <label for="q3-D">D. 杀死所有村民</label>
+        </div>
+      </div>
+
+      <button class="validation-submit-btn" onclick="submitAnswer()">提交最终结论</button>
+
+      <div id="validation-feedback"></div>
+    </div>
+  </main>
+
+  <footer id="intranet-footer">
+    YUNQUE INTRANET · INTERNAL USE ONLY · © YUNCHU OBSERVER PROJECT
+  </footer>
+
+  <script>
+    // 线索数据
+    var clueData = {
+      '3-A': {
+        name: '影子的低语',
+        content: '影子会笑，会说"欢迎回家"',
+        unlocked: false,
+        unlockKeyword: '影子'
+      },
+      '3-B': {
+        name: '影子规律数据',
+        content: '影子是"循环的累积"投影',
+        unlocked: false,
+        unlockKeyword: '统计'
+      },
+      '3-C': {
+        name: '武家铭的记忆',
+        content: '影子实现了村民"永远停留"的愿望',
+        unlocked: false,
+        unlockCondition: 'puzzle-foer-solved'
+      },
+      '3-D': {
+        name: '村民论坛帖子',
+        content: '村民普遍遭遇影子现象',
+        unlocked: false,
+        unlockKeyword: 'forum'
+      },
+      '3-E': {
+        name: '研究中心档案',
+        content: '影子是"时间锚点的投影"，即小坏蛋的投影体',
+        unlocked: false,
+        unlockKeyword: '实验体',
+        password: 'NO.042'
+      }
+    };
+
+    // 正确答案
+    var correctAnswers = {
+      q1: 'B',
+      q2: 'B',
+      q3: 'B'
+    };
+
+    // 初始化页面
+    function initPage() {
+      loadClueStatus();
+      updateClueDisplay();
+      checkValidationUnlock();
+    }
+
+    // 加载线索状态
+    function loadClueStatus() {
+      var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      var clues = saveData.clues || {};
+      var shadowClues = clues.shadow || {};
+
+      for (var clueId in shadowClues) { if (!shadowClues.hasOwnProperty(clueId)) continue; var unlocked = shadowClues[clueId];
+        if (clueData[clueId]) {
+          clueData[clueId].unlocked = unlocked;
+        }
+      }
+
+      // 检查武家铭线索解锁条件
+      if (saveData.puzzlesSolved && saveData.puzzlesSolved.foer) {
+        // 如果佛儿岩谜题已完成，自动解锁线索3-C
+        if (!clueData['3-C'].unlocked) {
+          clueData['3-C'].unlocked = true;
+          var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+          saveData.clues = saveData.clues || {};
+          saveData.clues.shadow = saveData.clues.shadow || {};
+          saveData.clues.shadow['3-C'] = true;
+          localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+        }
+      }
+    }
+
+    // 更新线索显示
+    function updateClueDisplay() {
+      var unlockedCount = 0;
+
+      for (var clueId in clueData) { if (!clueData.hasOwnProperty(clueId)) continue; var data = clueData[clueId];
+        var element = document.getElementById('clue-' + clueId.toLowerCase());
+        var reviewElement = document.getElementById('review-' + clueId.toLowerCase());
+
+        if (data.unlocked && element) {
+          unlockedCount++;
+          element.classList.remove('locked');
+          element.querySelector('.clue-status').textContent = '已获得';
+          element.querySelector('.clue-status').classList.remove('locked');
+          element.querySelector('.clue-status').classList.add('unlocked');
+
+          // 对于线索3-E，如果已解锁但不等于已解密内容，需要特殊处理
+          if (clueId === '3-E') {
+            var contentDiv = element.querySelector('.clue-content');
+            contentDiv.style.display = 'block';
+            // 检查是否已经解密
+            var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+            if (saveData.doc3EUnlocked) {
+              document.getElementById('doc-locked').style.display = 'none';
+              document.getElementById('doc-content').style.display = 'block';
+            }
+          } else {
+            element.querySelector('.clue-content').style.display = 'block';
+          }
+
+          var hint = element.querySelector('.clue-unlock-hint');
+          if (hint) hint.style.display = 'none';
+
+          if (reviewElement) {
+            reviewElement.classList.remove('missing');
+            reviewElement.textContent = '线索' + clueId + '：' + data.content;
+          }
+        }
+      }
+
+      return unlockedCount;
+    }
+
+    // 解锁文档
+    function unlockDocument() {
+      var input = document.getElementById('doc-password');
+      var password = input.value.trim().toUpperCase();
+      var feedback = document.getElementById('password-feedback');
+
+      if (password === 'NO.042' || password === '0042') {
+        document.getElementById('doc-locked').style.display = 'none';
+        document.getElementById('doc-content').style.display = 'block';
+        feedback.textContent = '';
+
+        // 保存解密状态
+        var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+        saveData.doc3EUnlocked = true;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+      } else {
+        feedback.innerHTML = '<span style="color: #e74c3c;">密码错误</span>';
+      }
+    }
+
+    // 检查是否解锁验证关卡
+    function checkValidationUnlock() {
+      var unlockedCount = updateClueDisplay();
+      var validationSection = document.getElementById('validation-section');
+
+      // 检查线索3-E是否已解密
+      var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+      var docUnlocked = saveData.doc3EUnlocked || false;
+
+      // 需要5条线索都获得且文档已解密
+      if (unlockedCount >= 5 && docUnlocked) {
+        validationSection.classList.remove('locked');
+      }
+    }
+
+    // 选择选项
+    function selectOption(question, value) {
+      document.getElementById(question + '-' + value).checked = true;
+    }
+
+    // 提交答案
+    function submitAnswer() {
+      var q1 = document.querySelector('input[name="q1"]:checked');
+      var q2 = document.querySelector('input[name="q2"]:checked');
+      var q3 = document.querySelector('input[name="q3"]:checked');
+      var feedbackDiv = document.getElementById('validation-feedback');
+
+      if (!q1 || !q2 || !q3) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">请回答所有问题</div>';
+        return;
+      }
+
+      var answers = {
+        q1: q1.value,
+        q2: q2.value,
+        q3: q3.value
+      };
+
+      var correctCount = 0;
+      if (answers.q1 === correctAnswers.q1) correctCount++;
+      if (answers.q2 === correctAnswers.q2) correctCount++;
+      if (answers.q3 === correctAnswers.q3) correctCount++;
+
+      if (correctCount === 3) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback success">' +
+            '<strong>✓ 完全正确</strong><br><br>' +
+            '你理解了影子的本质。<br><br>' +
+            '影子不是敌人，它是一个孩子想要永远快乐的愿望。<br>' +
+            '要拯救村庄，不是对抗影子……而是帮助那个孩子，让他愿意长大。<br><br>' +
+            '【解锁最终谜题】循环的起源<br>' +
+            '【解锁特殊道具】时之钢匕首（完整版）<br>' +
+            '【进入第八幕】重逢' +
+          '</div>';
+
+        // 保存完成状态
+        var saveData = JSON.parse(localStorage.getItem('yunchu_save') || '{}');
+        saveData.puzzlesSolved = saveData.puzzlesSolved || {};
+        saveData.puzzlesSolved.shadow = true;
+        saveData.shadowCorrectCount = 3;
+        localStorage.setItem('yunchu_save', JSON.stringify(saveData));
+
+        // 显示解决横幅
+        document.getElementById('solved-banner').style.display = 'block';
+
+        // 隐藏选项
+        document.getElementById('q1-options').style.display = 'none';
+        document.getElementById('q2-options').style.display = 'none';
+        document.getElementById('q3-options').style.display = 'none';
+        document.querySelector('.validation-submit-btn').style.display = 'none';
+      } else if (correctCount === 2) {
+        feedbackDiv.innerHTML = '<div class="validation-feedback partial">' +
+            '⚠️ 部分正确（2/3）<br>' +
+            '你还遗漏了一些关键信息。<br>' +
+            '建议回顾线索3-C和3-E。' +
+          '</div>';
+      } else {
+        feedbackDiv.innerHTML = '<div class="validation-feedback error">' +
+            '❌ 推理有误（' + correctCount + '/3）<br>' +
+            '关键线索可能被遗漏。<br>' +
+            '建议检查"村民论坛"和"研究中心档案"。' +
+          '</div>';
+      }
+    }
+
+    // 监听来自搜索的解锁消息
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'yunchu_save') {
+        initPage();
+      }
+    });
+
+    // 页面加载时初始化
+    initPage();
+
+    // 回车提交密码
+    document.getElementById('doc-password').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        unlockDocument();
+      }
+    });
+  </script>
+</body>
+</html>
