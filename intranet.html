@@ -3038,7 +3038,7 @@
       <span class="module-tag open">可访问</span>
     </div>
 
-    <div class="module-card" id="card-map" onclick="switchPanel('panel-map', '村庄地图')" style="cursor:pointer;">
+    <div class="module-card" id="card-map" onclick="openMapPanel()" style="cursor:pointer;">
       <span class="module-icon">📍</span>
       <div class="module-title">村庄地图</div>
       <div class="module-desc">云处村内部地形图及各功能区标注。</div>
@@ -5204,10 +5204,13 @@ function openMapPanel() {
   setTimeout(function() {
     document.getElementById('map-scroll-inner').classList.add('unrolled');
   }, 100);
-  // 显示/隐藏地图下方的继续对话按钮
+  // 显示/隐藏地图下方的继续对话按钮，并弹出曾佳秋消息提示
   var continueWrap = document.getElementById('map-continue-btn-wrap');
   if (continueWrap) {
     continueWrap.style.display = (chatProgress >= 7 && !mapChatStarted) ? 'block' : 'none';
+  }
+  if (chatProgress >= 7 && !mapChatStarted) {
+    setTimeout(showMapToast, 800);
   }
 }
 
