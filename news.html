@@ -30,8 +30,99 @@
       white-space: pre-line;
     }
     .corrupted-card {
-      border-color: #5a3030;
-      background: linear-gradient(160deg, #2a2020, #302020);
+      border: 1px dashed #c0392b;
+      background: linear-gradient(160deg, #1a1515, #201818);
+      position: relative;
+      overflow: hidden;
+      animation: corruptedPulse 2.2s infinite;
+    }
+    .corrupted-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(192,57,43,0.03) 0px,
+        rgba(192,57,43,0.03) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+    }
+    .corrupted-badge {
+      display: inline-block;
+      background: #c0392b;
+      color: #ffe;
+      font-size: 9px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 1px;
+      letter-spacing: 1px;
+      margin-right: 8px;
+      animation: badgeFlicker 1.4s infinite;
+    }
+    .glitch-text {
+      position: relative;
+      color: #c0392b;
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: #1a1515;
+    }
+    .glitch-text::before {
+      color: #ff4444;
+      clip-path: inset(0 0 60% 0);
+      animation: glitchShift 2.5s infinite linear alternate-reverse;
+    }
+    .glitch-text::after {
+      color: #44ff44;
+      clip-path: inset(40% 0 0 0);
+      animation: glitchShift 3s infinite linear alternate-reverse;
+    }
+    .corrupted-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #a03030;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .corrupted-body {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(240,200,200,0.75);
+      line-height: 2;
+      white-space: pre-line;
+      text-shadow: 0 0 2px rgba(192,57,43,0.2);
+    }
+    .corrupted-body .blk {
+      background: #c0392b;
+      color: #c0392b;
+      padding: 0 2px;
+      margin: 0 1px;
+    }
+    @keyframes corruptedPulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(192,57,43,0); border-color: #c0392b; }
+      50% { box-shadow: 0 0 14px rgba(192,57,43,0.25); border-color: #ff5555; }
+    }
+    @keyframes badgeFlicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    @keyframes glitchShift {
+      0% { transform: translateX(-1px); }
+      20% { transform: translateX(1px); }
+      40% { transform: translateX(-2px); }
+      60% { transform: translateX(2px); }
+      80% { transform: translateX(-1px); }
+      100% { transform: translateX(0); }
     }
   </style>
 </head>
@@ -123,14 +214,15 @@
       <!-- 损坏日志 -->
       <div class="monitor-card corrupted-card">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-          <span style="font-family:var(--mono);font-size:11px;color:#c0392b;letter-spacing:1px;font-weight:bold;">▓ 一条损坏的日志</span>
+          <span class="corrupted-badge">CRC ERROR</span>
+          <span class="glitch-text" data-text="▓ 一条损坏的日志">▓ 一条损坏的日志</span>
         </div>
-        <div style="font-family:var(--mono);font-size:12px;color:var(--text-dim);margin-bottom:12px;letter-spacing:1px;">
-          日期：<span style="color:#c0392b;">【数据损坏】</span> &nbsp;&nbsp; 作者：<span style="color:#c0392b;">【数据损坏】</span>
+        <div class="corrupted-meta">
+          日期：<span>【数据损坏】</span> &nbsp;&nbsp; 作者：<span>【数据损坏】</span> &nbsp;&nbsp; 校验和：<span>0x████</span>
         </div>
-        <div class="monitor-card-body" style="color:var(--text);">也许，小坏蛋不是唯一的"被困者"。
-还有另一个存在……它一直隐藏在我们身边，观察着我们，操控着一切。
-但我还不能确定它是什么。</div>
+        <div class="corrupted-body">也许，小坏<span class="blk">█</span>不是唯一的"被困<span class="blk">█</span>".
+还有另一<span class="blk">█</span>存在<span class="blk">█</span><span class="blk">█</span>它一直隐藏在我们身边，观<span class="blk">█</span>着我们，操<span class="blk">█</span>着一切.
+但我还不能确<span class="blk">█</span>它是什么.</div>
       </div>
 
     </div>
